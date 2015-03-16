@@ -1,0 +1,5 @@
+name: Warden
+main: io.ll.warden.Warden
+version: 1.0-SNAPSHOT
+depend: [ProtocolLib]
+startup: postworld
