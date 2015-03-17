@@ -9,6 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.ll.warden.commands.AuthAction;
+import io.ll.warden.storage.Database;
+import io.ll.warden.storage.MySQL;
+import io.ll.warden.storage.SQLite;
 
 /**
  * Author: LordLambda
@@ -21,6 +24,7 @@ public class Warden extends JavaPlugin {
   Logger l;
   private ProtocolManager protocolManager;
   private static Warden instance;
+  private Database db;
 
   /**
    * Called on plugin enable.
@@ -38,6 +42,37 @@ public class Warden extends JavaPlugin {
 
     log("Registering commands...");
     getCommand("verify").setExecutor(AuthAction.get());
+    log("Done.");
+
+    log("Setting Up the database");
+    boolean useMySQL = getConfig().getString("DatabaseType").equalsIgnoreCase("MYSQL");
+    log(Level.FINE, String.format("Using [ %s ] as storage.", useMySQL ? "MySQL" : "SQLite"));
+    if (useMySQL) {
+      db =
+          new MySQL(this, getConfig().getString("DBHost"), getConfig().getString("DBPort"),
+                    getConfig().getString("DBName"), getConfig().getString("DBUsername"),
+                    getConfig().getString("DBPassword"));
+      try {
+        db.openConnection();
+        log(String.format("DB connection test %b", db.checkConnection()));
+        db.closeConnection();
+      }catch(Exception e1) {
+        log("Failed to connect to DB! This is fatal!");
+        e1.printStackTrace();
+        return;
+      }
+    }else {
+      db = new SQLite(this, getConfig().getString("DBName"));
+      try {
+        db.openConnection();
+        log(String.format("DB connection test %b", db.checkConnection()));
+        db.closeConnection();
+      }catch(Exception e1) {
+        log("Failed to connect to DB! This is fatal!");
+        e1.printStackTrace();
+        return;
+      }
+    }
     log("Done.");
 
     /**
@@ -67,19 +102,18 @@ public class Warden extends JavaPlugin {
 
   /**
    * Logs a string w/ Formatting at INFO level
-   * @param toLog
-   *  The string to log.
+   *
+   * @param toLog The string to log.
    */
   public void log(String toLog) {
     log(Level.INFO, toLog);
   }
 
   /**
-   * Logs a string w/ formatting/
-   * @param logLevel
-   *  The log level to log at.
-   * @param toLog
-   *  The string to log.
+   * Logs a string w/ formatting.
+   *
+   * @param logLevel The log level to log at.
+   * @param toLog    The string to log.
    */
   public void log(Level logLevel, String toLog) {
     l.log(logLevel, String.format("[Warden AC] %s", toLog));
@@ -87,10 +121,19 @@ public class Warden extends JavaPlugin {
 
   /**
    * Gets the current warden instance if there is any.
-   * @return
-   *  The current warden instance. (Could be null).
+   *
+   * @return The current warden instance. (Could be null).
    */
   public static Warden get() {
     return instance;
+  }
+
+  /**
+   * Gets my custom version of a DB
+   *
+   * @return The Database
+   */
+  public Database getDB() {
+    return db;
   }
 }

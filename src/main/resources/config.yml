@@ -1,0 +1,177 @@
+###############################################
+# __    __              _
+#/ / /\ \ \__ _ _ __ __| | ___ _ __
+#\ \/  \/ / _` | '__/ _` |/ _ \ '_ \
+# \  /\  / (_| | | | (_| |  __/ | | |
+#  \/  \/ \__,_|_|  \__,_|\___|_| |_|
+###############################################
+
+###############################################
+#
+# Welcome to the dungeon.
+#
+# Here you will find all the configuration
+# Options for Warden, and all of it's
+# Sub-Parts. I'll try to include documentation
+# on what everything does, but no promises.
+# Also please. Think of the children.
+###############################################
+
+
+###############################################
+#
+# First up in our little journey is the SQL
+# Info. There are multiple values here for you
+# To configure for storage of data.
+#
+#  DatabaseType - Determines what type of
+#    a databast you want to use.
+#    Valid Values -> [MySQL, SQLite]
+#  DBName - For [MySQL] this would be the DB
+#    Name. For SQLite it would be the filename
+#    (without the .db)
+#  DBUsername - For [MySQL] only. This would
+#    be the username to your MySQL storage.
+#  DBPassword - For [MySQL] only. This would
+#    be the password to your MySQL storage.
+#  DBHost - For [MySQL] only. This would
+#    be the host (without port) to your
+#    MySQL server.
+#  DBPort - For [MySQL] only. This would
+#    be the port (without host) to your
+#    MySQL server.
+###############################################
+DatabaseType: MySQL
+DBName: Warden
+DBUsername: root
+DBPassword: chucknorris
+DBHost: 127.0.0.1
+DBPort: 3306
+
+
+###############################################
+#
+# Next up in our journey is some permissions
+# info. There are multiple values here for you
+# that have pretty good presets. However feel
+# free to configure them to your wishes.
+#
+#  HidePlugins - Determines if warden should
+#    Hide other plugins from people who don't
+#    have the permission:
+#      warden.nohide.<pluginName>
+#  HidePluginMessage - Determines what warden
+#    should send when someone requests a
+#    plugin they shouldn't be allowed to see.
+#  HideWarden - Determines if WardenAC should
+#    Hide itself from people who can't
+#    configure this plugin.
+#  HideWardenVersion - Determines if Warden
+#    should hide it's version number from
+#    people who can't configure this plugin.
+#  AnyoneHasAccount - Determines wether a
+#   normal user can create a Warden account.
+#   Warden accounts have a special ranking
+#   system, HideWarden turns off for people
+#   who have an account, and they can
+#   report people (alternatively they can
+#   report through the permission node:
+#   warden.report)
+#  AccountsHavePasswords - Determines if
+#    WardenAC Accounts should have passwords
+#    This is highly reccomended in case
+#    someone else logins to your account!
+###############################################
+HidePlugins: True
+HidePluginMessage: This has been disabled by your administrator.
+HideWarden: True
+HideWardenVersion: True
+AnyoneHasAccount: False
+AccountsHavePasswords: True
+
+
+###############################################
+#
+# Our next stop is SMTP! That's Right! Warden
+# is capable of sending emails! In fact! It
+# creates reports every so often, and thats
+# what it sends to you! Heck! It can even
+# read emails from your email for ban appeals!
+# All while in game!! Pretty Cool huh?
+# So anyway. These are the settings for all
+# of that stuff. Enjoy!
+#
+# ShouldSendBanReports - Determines if
+#  Warden should send ban reports.
+# UseHTMLEmail - Should use HTML email
+#  Style.
+# SendBanReportsTimeFrame - Determines
+#  How often Warden should send BanReports
+#  Valid Values -> [ HOURLY, DAILY,
+#    WEEKLY, MONTHLY, YEARLY ]
+# FromEmail - The Email that it's from.
+#  Note right now this only supports GMAIL!
+# FromDomain - The domain to send it from
+#  (e.g. GOOGLE, YAHOO, etc.) NOTE! ONLY
+#  GOOGLE is supported right now! Sorry!
+# FromUser - The user to login as username
+#  (generally the email address)
+# FromPassword - The user to login as
+#  password.
+# ShouldRetrieveBanAppeals - Determines if
+#  Warden should try to retrieve ban appeals
+#  from email.
+# BanAppealRefreshTimeFrame - Determines
+#  What the refresh time is for warden
+#  grabbing BanAppeals
+#  Valid Values -> [HALF-HOURLY, HOURLY,
+#   TWO-HOURS, DAILY]
+# RightToSeeBanAppeals - Determines who has
+#  the right to read ban appeals.
+#  Uses Warden Accounts.
+#  Valid Values -> [ ANYONE, USER,
+#   MODERATOR, ADMIN, OWNER ]
+# RightToJudgeBanAppeals - Determines who has
+#  the right to judge wether someone should be
+#  unbanned from ban appeals. Uses Warden
+#  accounts.
+#  Valid Values -> [ ANYONE, USER,
+#    MODERATOR, ADMIN, OWNER ]
+# GrabEmail - The Email to grab from (
+#  NOTE ONLY GOOGLE IS SUPPORTED )
+# GrabDomain - The domain to send it from
+#  (e.g. GOOGLE, YAHOO, etc.) NOTE! ONLY
+#  GOOGLE IS SUPPORTED RIGHT NOW! Sorry!
+# GrabUser - The user to login as for
+#  Grabbing Email. (Generally the email
+#  Address).
+# GrabPass - The password for the GrabEmail
+###############################################
+ShouldSendBanReports: False
+UseHTMLEmail: True
+SendBanReportsTimeFrame: WEEKLY
+FromEmail: myemail@gmail.com
+FromDomain: GOOGLE
+FromUser: myemail@gmail.com
+FromPassword: myAwesomePassword6328
+ShouldRetrieveBanAppeals: False
+BanAppealRefreshTimeFrame: HOURLY
+RightToSeeBanAppeals: MODERATOR
+RightToJudgeBanAppeals: ADMIN
+GrabEmail: myemail@gmail.com
+GrabDomain: GOOGLE
+GrabUser: myemail@gmail.com
+GrabPass: myAwesomePassword6328
+
+
+###############################################
+#
+# Next in our stop is the logging phase.
+# Warden has the ability to log events, and
+# catogrizes them appropietly into subsections.
+# It provides an extreme amount of extra data
+# in some cases though! Only use if you have
+# the harddrive to back it up!
+# //TODO:
+###############################################
+//TODO:

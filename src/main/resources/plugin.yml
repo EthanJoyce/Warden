@@ -1,5 +1,12 @@
 name: Warden
+description: Helps stop more exploits, and cheats than any other anti-cheat.
+authors: [LordLambda]
 main: io.ll.warden.Warden
 version: 1.0-SNAPSHOT
 depend: [ProtocolLib]
 startup: postworld
+
+commands:
+  verify:
+    description: Verifies certain actions for warden
+    usage: /verify <action> <password>
