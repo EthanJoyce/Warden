@@ -3,9 +3,13 @@ package io.ll.warden.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.ll.warden.Warden;
+import io.ll.warden.accounts.WardenAccount;
 
 /**
  * Creator: LordLambda
@@ -15,11 +19,11 @@ import java.util.List;
  */
 public class AuthAction implements CommandExecutor {
 
-  private List<AuthCallback> toAuthBackToo;
+  private List<WardenAccount> toAuthBackTooAccounts;
   private static AuthAction instance;
 
   protected AuthAction() {
-    toAuthBackToo = new ArrayList<AuthCallback>();
+    toAuthBackTooAccounts = new ArrayList<WardenAccount>();
   }
 
   public static AuthAction get() {
@@ -35,27 +39,41 @@ public class AuthAction implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
-    if(toAuthBackToo.size() == 0) {
-      //TODO: Check if we want to hide commands from regular users.
-      sender.sendMessage("[Warden] You have nothing to verify!");
+    if(!(sender instanceof Player)) {
+      Warden.get().log("Console can't execute This command.");
       return true;
-    }else {
-      for(AuthCallback ac : toAuthBackToo) {
-        if(ac.getAuthBackName().equalsIgnoreCase(args[0])) {
-          //TODO: check what user is.
-          ac.onCallback(AuthLevel.NONE);
-          toAuthBackToo.remove(ac);
-          return true;
-        }
+    }
+    for(WardenAccount wa : toAuthBackTooAccounts) {
+      Player p = (Player) sender;
+      if(!(p.getUniqueId() == wa.getPlayerUUID())) {
+        continue;
       }
-      //TODO: Check if we want to hide commands from regular users.
-      sender.sendMessage("[Warden] Couldn't find that command to verify?");
+      List<AuthCallback> toAuthBackToo = wa.getVerifications();
+      if (toAuthBackToo.size() == 0) {
+        sender.sendMessage("[Warden] You have nothing to verify!");
+        return true;
+      } else {
+        for (AuthCallback ac : toAuthBackToo) {
+          if (ac.getAuthBackName().equalsIgnoreCase(args[0])) {
+            ac.onCallback(wa.getLevel());
+            wa.remCallback(ac);
+            if(wa.getVerifications().size() == 0) {
+              toAuthBackTooAccounts.remove(wa);
+            }
+            return true;
+          }
+        }
+        sender.sendMessage("[Warden] Couldn't find that command to verify?");
+      }
     }
     return true;
   }
 
-  public void registerAuthCallback(AuthCallback ac) {
-    toAuthBackToo.add(ac);
+  public void registerAuthCallback(WardenAccount wa, AuthCallback ac) {
+    wa.addCallback(ac);
+    if(!toAuthBackTooAccounts.contains(wa)) {
+      toAuthBackTooAccounts.add(wa);
+    }
   }
 
   public interface AuthCallback {
