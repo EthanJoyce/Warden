@@ -1,6 +1,10 @@
 package io.ll.warden.checks;
 
+import org.bukkit.plugin.PluginManager;
+
 import java.util.UUID;
+
+import io.ll.warden.Warden;
 
 /**
  * Creator: LordLambda
@@ -17,6 +21,10 @@ public class CheckManager {
   }
 
   protected CheckManager() {
+  }
+
+  public void registerListeners(Warden w, PluginManager pm) {
+
   }
 
   public static CheckManager get() {

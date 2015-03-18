@@ -81,6 +81,8 @@ DBPort: 3306
 #    WardenAC Accounts should have passwords
 #    This is highly reccomended in case
 #    someone else logins to your account!
+#  UseWardenAccounts - Should we use
+#   Warden Accounts?
 ###############################################
 HidePlugins: True
 HidePluginMessage: This has been disabled by your administrator.
@@ -88,6 +90,7 @@ HideWarden: True
 HideWardenVersion: True
 AnyoneHasAccount: False
 AccountsHavePasswords: True
+UseWardenAccounts: True
 
 
 ###############################################

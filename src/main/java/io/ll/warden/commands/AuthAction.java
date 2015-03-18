@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.ll.warden.Warden;
 import io.ll.warden.accounts.WardenAccount;
+import io.ll.warden.accounts.WardenAccountManager;
 
 /**
  * Creator: LordLambda
@@ -41,6 +42,11 @@ public class AuthAction implements CommandExecutor {
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
     if(!(sender instanceof Player)) {
       Warden.get().log("Console can't execute This command.");
+      return true;
+    }
+    if(!WardenAccountManager.get().hasWardenAccounts()) {
+      return true;
+    }else if(!WardenAccountManager.get().playerHasWardenAccount(((Player) sender).getUniqueId())) {
       return true;
     }
     for(WardenAccount wa : toAuthBackTooAccounts) {

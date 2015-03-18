@@ -10,3 +10,7 @@ commands:
   verify:
     description: Verifies certain actions for warden
     usage: /verify <action> <password>
+  registerWarden:
+    description: Register A Warden Account
+    usage: /rW <user> <rank>
+    aliases: rW

@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.ll.warden.accounts.WardenAccountManager;
+import io.ll.warden.checks.CheckManager;
 import io.ll.warden.commands.AuthAction;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
@@ -40,10 +42,6 @@ public class Warden extends JavaPlugin {
     protocolManager = ProtocolLibrary.getProtocolManager();
     log("Got.");
 
-    log("Registering commands...");
-    getCommand("verify").setExecutor(AuthAction.get());
-    log("Done.");
-
     log("Setting Up the database");
     boolean useMySQL = getConfig().getString("DatabaseType").equalsIgnoreCase("MYSQL");
     log(Level.FINE, String.format("Using [ %s ] as storage.", useMySQL ? "MySQL" : "SQLite"));
@@ -73,6 +71,23 @@ public class Warden extends JavaPlugin {
         return;
       }
     }
+    log("Done.");
+
+    log("Registering commands...");
+    getCommand("verify").setExecutor(AuthAction.get());
+    WardenAccountManager wam = WardenAccountManager.get();
+    wam.setDB(db);
+    getCommand("registerWarden").setExecutor(wam);
+    getCommand("rW").setExecutor(wam);
+    log("Done.");
+
+    log("Setting up CheckManager.");
+    CheckManager.get();
+    log("Done.");
+
+    log("Registering Listeners...");
+    CheckManager.get().registerListeners(this, getServer().getPluginManager());
+    getServer().getPluginManager().registerEvents(wam, this);
     log("Done.");
 
     /**
