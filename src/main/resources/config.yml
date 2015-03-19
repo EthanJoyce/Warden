@@ -83,6 +83,8 @@ DBPort: 3306
 #    someone else logins to your account!
 #  UseWardenAccounts - Should we use
 #   Warden Accounts?
+#  BlockTor - Tor being the online anonimizing
+#   proxy. Tons of people use this.
 ###############################################
 HidePlugins: True
 HidePluginMessage: This has been disabled by your administrator.
@@ -91,6 +93,7 @@ HideWardenVersion: True
 AnyoneHasAccount: False
 AccountsHavePasswords: True
 UseWardenAccounts: True
+BlockTor: False
 
 
 ###############################################

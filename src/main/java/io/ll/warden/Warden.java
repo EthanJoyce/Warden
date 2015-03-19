@@ -76,6 +76,7 @@ public class Warden extends JavaPlugin {
     log("Registering commands...");
     getCommand("verify").setExecutor(AuthAction.get());
     WardenAccountManager wam = WardenAccountManager.get();
+    wam.setConfig(getConfig());
     wam.setDB(db);
     getCommand("registerWarden").setExecutor(wam);
     getCommand("rW").setExecutor(wam);
