@@ -23,10 +23,19 @@ import io.ll.warden.storage.SQLite;
  */
 public class Warden extends JavaPlugin {
 
+  private static Warden instance;
   Logger l;
   private ProtocolManager protocolManager;
-  private static Warden instance;
   private Database db;
+
+  /**
+   * Gets the current warden instance if there is any.
+   *
+   * @return The current warden instance. (Could be null).
+   */
+  public static Warden get() {
+    return instance;
+  }
 
   /**
    * Called on plugin enable.
@@ -54,18 +63,18 @@ public class Warden extends JavaPlugin {
         db.openConnection();
         log(String.format("DB connection test %b", db.checkConnection()));
         db.closeConnection();
-      }catch(Exception e1) {
+      } catch (Exception e1) {
         log("Failed to connect to DB! This is fatal!");
         e1.printStackTrace();
         return;
       }
-    }else {
+    } else {
       db = new SQLite(this, getConfig().getString("DBName"));
       try {
         db.openConnection();
         log(String.format("DB connection test %b", db.checkConnection()));
         db.closeConnection();
-      }catch(Exception e1) {
+      } catch (Exception e1) {
         log("Failed to connect to DB! This is fatal!");
         e1.printStackTrace();
         return;
@@ -133,15 +142,6 @@ public class Warden extends JavaPlugin {
    */
   public void log(Level logLevel, String toLog) {
     l.log(logLevel, String.format("[Warden AC] %s", toLog));
-  }
-
-  /**
-   * Gets the current warden instance if there is any.
-   *
-   * @return The current warden instance. (Could be null).
-   */
-  public static Warden get() {
-    return instance;
   }
 
   /**

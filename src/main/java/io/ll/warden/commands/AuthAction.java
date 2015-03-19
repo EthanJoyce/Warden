@@ -20,17 +20,25 @@ import io.ll.warden.accounts.WardenAccountManager;
  */
 public class AuthAction implements CommandExecutor {
 
-  private List<WardenAccount> toAuthBackTooAccounts;
   private static AuthAction instance;
+  private List<WardenAccount> toAuthBackTooAccounts;
 
+  /**
+   * Initalize the list. Thats all we need to do.
+   */
   protected AuthAction() {
     toAuthBackTooAccounts = new ArrayList<WardenAccount>();
   }
 
+  /**
+   * A thread safe way to handle Singletons
+   *
+   * @return The Singleton instance.
+   */
   public static AuthAction get() {
-    if(instance == null) {
+    if (instance == null) {
       synchronized (AuthAction.class) {
-        if(instance == null) {
+        if (instance == null) {
           instance = new AuthAction();
         }
       }
@@ -38,20 +46,33 @@ public class AuthAction implements CommandExecutor {
     return instance;
   }
 
+  /**
+   * The method for processing a verification command.
+   *
+   * @param sender  The Sender of the command
+   * @param command The command that was sent
+   * @param name    Don't feel like I have to explain this.
+   * @param args    The arguments split into an array.
+   * @return Wether the command executed successfully.
+   */
   @Override
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
-    if(!(sender instanceof Player)) {
+    if (!command.getName().equalsIgnoreCase("verify")) {
+      return false;
+    }
+    if (!(sender instanceof Player)) {
       Warden.get().log("Console can't execute This command.");
       return true;
     }
-    if(!WardenAccountManager.get().hasWardenAccounts()) {
+    if (!WardenAccountManager.get().hasWardenAccounts()) {
       return true;
-    }else if(!WardenAccountManager.get().playerHasWardenAccount(((Player) sender).getUniqueId())) {
+    } else if (!WardenAccountManager.get()
+        .playerHasWardenAccount(((Player) sender).getUniqueId())) {
       return true;
     }
-    for(WardenAccount wa : toAuthBackTooAccounts) {
+    for (WardenAccount wa : toAuthBackTooAccounts) {
       Player p = (Player) sender;
-      if(!(p.getUniqueId() == wa.getPlayerUUID())) {
+      if (!(p.getUniqueId() == wa.getPlayerUUID())) {
         continue;
       }
       List<AuthCallback> toAuthBackToo = wa.getVerifications();
@@ -63,7 +84,7 @@ public class AuthAction implements CommandExecutor {
           if (ac.getAuthBackName().equalsIgnoreCase(args[0])) {
             ac.onCallback(wa.getLevel());
             wa.remCallback(ac);
-            if(wa.getVerifications().size() == 0) {
+            if (wa.getVerifications().size() == 0) {
               toAuthBackTooAccounts.remove(wa);
             }
             return true;
@@ -75,23 +96,37 @@ public class AuthAction implements CommandExecutor {
     return true;
   }
 
+  /**
+   * Register an action with an account that needs to be verified
+   *
+   * @param wa The Warden account that needs to verify
+   * @param ac The auth callback.
+   */
   public void registerAuthCallback(WardenAccount wa, AuthCallback ac) {
     wa.addCallback(ac);
-    if(!toAuthBackTooAccounts.contains(wa)) {
+    if (!toAuthBackTooAccounts.contains(wa)) {
       toAuthBackTooAccounts.add(wa);
     }
   }
 
-  public interface AuthCallback {
-    public String getAuthBackName();
-    public void onCallback(AuthLevel level);
-  }
-
+  /**
+   * The possible AuthLevels for a warden account.
+   */
   public enum AuthLevel {
     NONE, //If the player failed authentication
     USER, //If the player is just a general user
     MODERATOR, //If the player is a moderator
     ADMIN, //If the player is an admin
     OWNER
+  }
+
+  /**
+   * An interface for something that wants to get a callback.
+   */
+  public interface AuthCallback {
+
+    public String getAuthBackName();
+
+    public void onCallback(AuthLevel level);
   }
 }

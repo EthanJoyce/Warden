@@ -38,53 +38,123 @@ public class WardenAccountManager implements CommandExecutor, Listener {
   private boolean shouldHaveAccounts;
   private boolean blockingTor;
   private Database db;
+  private Thread dbRefreshThread = new Thread() {
+    @Override
+    public void run() {
+      try {
+        db.openConnection();
+        if (db.checkConnection()) {
+          //Create table if it doesn't exist.
+          db.querySQL("CREATE TABLE IF NOT EXISTS Warden"
+                      + "(UUID varchar(36) NOT NULL,"
+                      + "RANK tinyint(1) NOT NULL,"
+                      + "VERIFICATIONKEY varchar(1600) NOT NULL,"
+                      + "PRIMARY KEY (UUID)"
+                      + ");");
+        }
+        db.closeConnection();
+      } catch (Exception e1) {
+        Warden.get().log(String.format("Refreshing DB Error [ %s ]",
+                                       e1.getLocalizedMessage()));
+      }
+    }
+  };
 
+  /**
+   * Initalize everything we need to.
+   */
   protected WardenAccountManager() {
     shouldHaveAccounts = false;
     wardenAccounts = new ArrayList<WardenAccount>();
     db = null;
   }
 
+  /**
+   * Get the current singleton instance
+   *
+   * @return The current singleton instance.
+   */
+  public static WardenAccountManager get() {
+    if (manager == null) {
+      synchronized (WardenAccountManager.class) {
+        if (manager == null) {
+          manager = new WardenAccountManager();
+        }
+      }
+    }
+    return manager;
+  }
+
+  /**
+   * Set the configuration file for data
+   *
+   * @param cF The configuration
+   */
   public void setConfig(FileConfiguration cF) {
     shouldHaveAccounts = cF.getBoolean("UseWardenAccounts");
     blockingTor = cF.getBoolean("BlockTor");
   }
 
+  /**
+   * @return If warden accounts are loged.
+   */
   public boolean hasWardenAccounts() {
     return shouldHaveAccounts;
   }
 
+  /**
+   * If the player has a warden account
+   *
+   * @param uuid The UUID
+   * @return IF the passed UUID has a warden account.
+   */
   public boolean playerHasWardenAccount(UUID uuid) {
-    for(WardenAccount wa : wardenAccounts) {
-      if(wa.getPlayerUUID().equals(uuid)) {
+    for (WardenAccount wa : wardenAccounts) {
+      if (wa.getPlayerUUID().equals(uuid)) {
         return true;
       }
     }
     return false;
   }
 
+  /**
+   * Set the databse
+   *
+   * @param db Heres the database
+   */
   public void setDB(Database db) {
     this.db = db;
+    if (dbRefreshThread.isAlive()) {
+      dbRefreshThread.stop();
+    }
+    dbRefreshThread.run();
   }
 
+  /**
+   * Process a command
+   *
+   * @param sender  The sender of the command
+   * @param command The command being sent
+   * @param name    The name duh
+   * @param args    The arguments passed
+   * @return If the command executed correctly.
+   */
   @Override
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
 
     return true;
   }
 
-  private Thread dbRefreshThread = new Thread() {
-    @Override
-    public void run() {
-
-    }
-  };
-
+  /**
+   * Listen for a player login
+   *
+   * @param event The event we are listening too.
+   */
   @EventHandler
   public void playerLoginEvent(PlayerLoginEvent event) {
     final Player p = event.getPlayer();
     final InetAddress ip = event.getAddress();
-    if(blockingTor) {
+    if (blockingTor) {
       new Thread() {
         @Override
         public void run() {
@@ -93,7 +163,7 @@ public class WardenAccountManager implements CommandExecutor, Listener {
           String line;
           Player localP = p;
           InetAddress local = ip;
-          if(!torList.exists()) {
+          if (!torList.exists()) {
             //Get it into a local instance.
             URL url;
             InputStream is;
@@ -102,7 +172,7 @@ public class WardenAccountManager implements CommandExecutor, Listener {
               url = new URL("https://dan.me.ul/tornodes/");
               is = url.openStream();
               br = new BufferedReader(new InputStreamReader(is));
-              while((line = br.readLine()) != null) {
+              while ((line = br.readLine()) != null) {
                 lines.add(line);
               }
               br.close();
@@ -111,19 +181,19 @@ public class WardenAccountManager implements CommandExecutor, Listener {
               Warden.get().log("Failed to grab tor list!");
               e1.printStackTrace();
             }
-          }else {
+          } else {
             try {
               BufferedReader br = new BufferedReader(new FileReader(torList));
-              while((line = br.readLine()) != null) {
+              while ((line = br.readLine()) != null) {
                 lines.add(line);
               }
               br.close();
-            }catch(Exception e1) {
+            } catch (Exception e1) {
               //Won't happen.
             }
           }
-          for(String s : lines) {
-            if(s.equals(local.getHostAddress())) {
+          for (String s : lines) {
+            if (s.equals(local.getHostAddress())) {
               localP.kickPlayer("TOR is not allowed!");
               break;
             }
@@ -132,23 +202,13 @@ public class WardenAccountManager implements CommandExecutor, Listener {
       }.run();
     }
     try {
-      ResultSet rs = db.querySQL(String.format("SELECT * WHERE UUID=\"%s\"", p.getUniqueId()));
-      if(rs.next()) {
+      ResultSet rs = db.querySQL(String.format("SELECT * FROM WARDEN "
+                                               + "WHERE UUID=\"%s\"", p.getUniqueId()));
+      if (rs.next()) {
         p.sendMessage("You have a Warden account. Please Log-In.");
       }
-    }catch(Exception e1) {
+    } catch (Exception e1) {
       e1.printStackTrace();
     }
-  }
-
-  public static WardenAccountManager get() {
-    if(manager == null) {
-      synchronized (WardenAccountManager.class) {
-        if(manager == null) {
-          manager = new WardenAccountManager();
-        }
-      }
-    }
-    return manager;
   }
 }
