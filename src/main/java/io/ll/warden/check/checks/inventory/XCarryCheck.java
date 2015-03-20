@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.injector.GamePhase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,10 +36,15 @@ import io.ll.warden.events.CheckFailedEvent;
 public class XCarryCheck extends Check implements PacketListener {
 
   private List<UUID> map;
+  private ListeningWhitelist lw;
+  private ListeningWhitelist out;
 
   public XCarryCheck() {
     super("XCarryCheck");
     map = new ArrayList<UUID>();
+    lw = ListeningWhitelist.newBuilder()
+        .highest().gamePhase(GamePhase.PLAYING).build();
+    out = ListeningWhitelist.EMPTY_WHITELIST;
   }
 
   @Override
@@ -100,12 +106,12 @@ public class XCarryCheck extends Check implements PacketListener {
 
   @Override
   public ListeningWhitelist getSendingWhitelist() {
-    return null;
+    return out;
   }
 
   @Override
   public ListeningWhitelist getReceivingWhitelist() {
-    return null;
+    return lw;
   }
 
   @Override
