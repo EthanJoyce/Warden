@@ -14,6 +14,7 @@ import io.ll.warden.commands.AuthAction;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
 import io.ll.warden.storage.SQLite;
+import io.ll.warden.utils.MovementHelper;
 
 /**
  * Author: LordLambda
@@ -99,6 +100,11 @@ public class Warden extends JavaPlugin {
 
     log("Setting up CheckManager.");
     CheckManager.get();
+    log("Done.");
+
+    log("Setting up movement helper...");
+    MovementHelper.get();
+    MovementHelper.get().setProtocolManager(protocolManager);
     log("Done.");
 
     log("Registering Listeners...");
