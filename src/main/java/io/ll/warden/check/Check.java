@@ -1,4 +1,4 @@
-package io.ll.warden.checks;
+package io.ll.warden.check;
 
 import org.bukkit.plugin.PluginManager;
 
@@ -16,7 +16,7 @@ public abstract class Check {
 
   private String name;
 
-  public void Check(String name) {
+  public Check(String name) {
     this.name = name;
   }
 

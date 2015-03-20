@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.ll.warden.accounts.WardenAccountManager;
-import io.ll.warden.checks.CheckManager;
+import io.ll.warden.check.CheckManager;
 import io.ll.warden.commands.AuthAction;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
