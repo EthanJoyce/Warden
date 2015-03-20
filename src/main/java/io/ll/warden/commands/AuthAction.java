@@ -117,7 +117,16 @@ public class AuthAction implements CommandExecutor {
     USER, //If the player is just a general user
     MODERATOR, //If the player is a moderator
     ADMIN, //If the player is an admin
-    OWNER
+    OWNER;
+
+    public static AuthLevel getByOrdinal(int ord) {
+      for(AuthLevel al : AuthLevel.values()) {
+        if(al.ordinal() == ord) {
+          return al;
+        }
+      }
+      return null;
+    }
   }
 
   /**

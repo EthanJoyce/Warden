@@ -20,10 +20,10 @@ public class WardenAccount {
   private AuthAction.AuthLevel level;
   private byte[] hashedPassword;
 
-  public WardenAccount(UUID uuid, AuthAction.AuthLevel level, byte[] unHashedPassword) {
+  public WardenAccount(UUID uuid, AuthAction.AuthLevel level, byte[] hashedPassword) {
     this.playerUUID = uuid;
     this.level = level;
-    this.hashedPassword = PasswordUtils.hashBytes(unHashedPassword);
+    this.hashedPassword = hashedPassword;
     this.needsVerification = new ArrayList<AuthAction.AuthCallback>();
   }
 

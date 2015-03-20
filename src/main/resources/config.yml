@@ -181,3 +181,15 @@ GrabPass: myAwesomePassword6328
 # //TODO:
 ###############################################
 //TODO:
+
+
+###############################################
+#
+# The final stop in our journey is simple!
+# We've reached the miscellaneous config!
+# That's right heres some random stuff!
+#
+#  LongLogMessage: Determines if we should
+#    use a longer log prefix or not.
+###############################################
+LongLogMessage: True

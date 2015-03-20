@@ -12,5 +12,13 @@ commands:
     usage: /verify <action> <password>
   registerWarden:
     description: Register A Warden Account
-    usage: /rW <user> <rank>
+    usage: /rW <user> <pass> <rank>
     aliases: rW
+  loginWarden:
+    description: Login to a warden account
+    usage: /login <pass>
+    aliases: login
+  promoteWarden:
+    description: Promote someones warden account
+    usage: /pW <user> <level>
+    aliases: pW

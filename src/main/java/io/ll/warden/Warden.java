@@ -27,6 +27,7 @@ public class Warden extends JavaPlugin {
   Logger l;
   private ProtocolManager protocolManager;
   private Database db;
+  private boolean usingLongLog;
 
   /**
    * Gets the current warden instance if there is any.
@@ -45,6 +46,7 @@ public class Warden extends JavaPlugin {
     instance = this;
     l = getLogger();
     saveDefaultConfig();
+    usingLongLog = getConfig().getBoolean("LongLogMessage");
     log("Starting Warden...");
 
     log("Getting Protocol Manager....");
@@ -89,6 +91,10 @@ public class Warden extends JavaPlugin {
     wam.setDB(db);
     getCommand("registerWarden").setExecutor(wam);
     getCommand("rW").setExecutor(wam);
+    getCommand("loginWarden").setExecutor(wam);
+    getCommand("login").setExecutor(wam);
+    getCommand("promoteWarden").setExecutor(wam);
+    getCommand("pW").setExecutor(wam);
     log("Done.");
 
     log("Setting up CheckManager.");
@@ -141,7 +147,8 @@ public class Warden extends JavaPlugin {
    * @param toLog    The string to log.
    */
   public void log(Level logLevel, String toLog) {
-    l.log(logLevel, String.format("[Warden AC] %s", toLog));
+    l.log(logLevel, String.format("[%s] %s", usingLongLog ?
+                                             "Warden AC" : "WAC", toLog));
   }
 
   /**
@@ -151,5 +158,14 @@ public class Warden extends JavaPlugin {
    */
   public Database getDB() {
     return db;
+  }
+
+  /**
+   * Gets the instance of the protocol manager.
+   *
+   * @return The protocol manager.
+   */
+  public ProtocolManager getProtocolManager() {
+    return protocolManager;
   }
 }
