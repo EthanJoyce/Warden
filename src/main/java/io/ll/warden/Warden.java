@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +15,7 @@ import io.ll.warden.commands.AuthAction;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
 import io.ll.warden.storage.SQLite;
+import io.ll.warden.utils.BlockUtilities;
 import io.ll.warden.utils.MovementHelper;
 
 /**
@@ -46,7 +48,9 @@ public class Warden extends JavaPlugin {
   public void onEnable() {
     instance = this;
     l = getLogger();
-    saveDefaultConfig();
+    if(!(new File(getDataFolder(), "config.yml")).exists()) {
+      saveDefaultConfig();
+    }
     usingLongLog = getConfig().getBoolean("LongLogMessage");
     log("Starting Warden...");
 
@@ -91,11 +95,8 @@ public class Warden extends JavaPlugin {
     wam.setConfig(getConfig());
     wam.setDB(db);
     getCommand("registerWarden").setExecutor(wam);
-    getCommand("rW").setExecutor(wam);
     getCommand("loginWarden").setExecutor(wam);
-    getCommand("login").setExecutor(wam);
     getCommand("promoteWarden").setExecutor(wam);
-    getCommand("pW").setExecutor(wam);
     log("Done.");
 
     log("Setting up CheckManager.");
@@ -105,6 +106,11 @@ public class Warden extends JavaPlugin {
     log("Setting up movement helper...");
     MovementHelper.get();
     MovementHelper.get().setProtocolManager(protocolManager);
+    log("Done.");
+
+    log("Setting up block helper...");
+    BlockUtilities.get();
+    BlockUtilities.get().setup(this);
     log("Done.");
 
     log("Registering Listeners...");

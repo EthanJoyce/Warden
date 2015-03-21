@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import io.ll.warden.Warden;
 import io.ll.warden.accounts.WardenAccountManager;
+import io.ll.warden.check.checks.combat.*;
 import io.ll.warden.check.checks.inventory.*;
 import io.ll.warden.check.checks.movement.*;
 import io.ll.warden.commands.AuthAction;
@@ -33,6 +34,7 @@ public class CheckManager implements Listener {
     checks = new ArrayList<Check>();
     checks.add(new XCarryCheck());
     checks.add(new SprintCheck());
+    checks.add(new ReachCheck());
   }
 
   /**

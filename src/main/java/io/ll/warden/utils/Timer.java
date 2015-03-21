@@ -29,6 +29,10 @@ public class Timer {
     return finalCheck;
   }
 
+  public long getLastCheck() {
+    return lastCheck;
+  }
+
   /**
    * Resets the <code>lastCheck</code>
    */

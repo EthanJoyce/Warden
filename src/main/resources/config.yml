@@ -182,6 +182,21 @@ GrabPass: myAwesomePassword6328
 ###############################################
 //TODO:
 
+###############################################
+#
+# Next in our stop is some magic values
+# That's right a magic values. For use in
+# Checks. Please never Change these values
+# unless you truly know what your doing.
+# To make it even more obscure there is going
+# to be no documentation on what they're doing.
+# This way you have to look through the source.
+#
+# PLEASE NEVER CHANGE THESE VALUES.
+###############################################
+WALKDISTANCE: 1.0
+SPRINTDISTANCE: 1.4
+SNEAKDISTANCE: 0.5
 
 ###############################################
 #
