@@ -174,4 +174,8 @@ public class Warden extends JavaPlugin {
   public ProtocolManager getProtocolManager() {
     return protocolManager;
   }
+
+  public static void main(String[] args) {
+    System.out.println("This can only be run as a spigot plugin!");
+  }
 }
