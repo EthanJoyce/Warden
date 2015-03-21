@@ -13,6 +13,7 @@ import io.ll.warden.accounts.WardenAccountManager;
 import io.ll.warden.check.checks.combat.*;
 import io.ll.warden.check.checks.inventory.*;
 import io.ll.warden.check.checks.movement.*;
+import io.ll.warden.check.checks.world.*;
 import io.ll.warden.commands.AuthAction;
 import io.ll.warden.events.CheckFailedEvent;
 
@@ -35,6 +36,8 @@ public class CheckManager implements Listener {
     checks.add(new XCarryCheck());
     checks.add(new SprintCheck());
     checks.add(new ReachCheck());
+    checks.add(new SpeedCheck());
+    checks.add(new BlockReachCheck());
   }
 
   /**

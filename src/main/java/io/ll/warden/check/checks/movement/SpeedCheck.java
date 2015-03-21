@@ -1,6 +1,8 @@
 package io.ll.warden.check.checks.movement;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,8 +15,10 @@ import java.util.UUID;
 
 import io.ll.warden.Warden;
 import io.ll.warden.check.Check;
+import io.ll.warden.events.CheckFailedEvent;
 import io.ll.warden.events.PlayerTrueMoveEvent;
 import io.ll.warden.utils.BlockUtilities;
+import io.ll.warden.utils.MathHelper;
 import io.ll.warden.utils.MovementHelper;
 import io.ll.warden.utils.Timer;
 
@@ -56,6 +60,7 @@ public class SpeedCheck extends Check implements Listener {
     if(t.hasReach(2)) {
       t.stop();
       long timePassed = t.getFinalCheck() - t.getLastCheck();
+      long secondsPassed = timePassed * 1000;
       t.reset();
 
       if(p.isInsideVehicle()) {
@@ -66,7 +71,19 @@ public class SpeedCheck extends Check implements Listener {
       boolean inWeb = BlockUtilities.get().isPlayerInWeb(p);
 
       if(!(p.getGameMode() == GameMode.CREATIVE)) {
+        Location now = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
+        Location then = MovementHelper.get().getPlayerNMinusOneLocation(p.getUniqueId());
 
+        Location calcMax = then.multiply(multi).multiply((
+            p.isSprinting() ? sprintSpeed : p.isSneaking() ? sneakSpeed : walkSpeed));
+        if(MathHelper.getHorizontalDistance(then, calcMax) > MathHelper.getHorizontalDistance(
+            then, now)) {
+          Bukkit.getServer().getPluginManager().callEvent(
+              new CheckFailedEvent(
+                  p.getUniqueId(), getRaiseLevel(), getName()
+              )
+          );
+        }
       }else {
         //Should I even do this?
       }
