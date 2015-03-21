@@ -12,24 +12,28 @@ import org.bukkit.event.HandlerList;
  */
 public class PlayerTrueMoveEvent extends Event {
 
+  public static final HandlerList handlers = new HandlerList();
   Player player;
 
   public PlayerTrueMoveEvent(Player p) {
     this.player = p;
   }
 
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
+
+  /**
+   * Get the player who moved
+   *
+   * @return the player who moved.
+   */
   public Player getPlayer() {
     return player;
   }
 
-  public static final HandlerList handlers = new HandlerList();
-
   @Override
-  public HandlerList getHandlers(){
-    return handlers;
-  }
-
-  public static HandlerList getHandlerList() {
+  public HandlerList getHandlers() {
     return handlers;
   }
 }

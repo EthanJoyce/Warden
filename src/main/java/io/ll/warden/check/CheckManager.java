@@ -32,7 +32,7 @@ public class CheckManager implements Listener {
   protected CheckManager() {
     checks = new ArrayList<Check>();
     checks.add(new XCarryCheck());
-    checks.add(new Sprint());
+    checks.add(new SprintCheck());
   }
 
   /**

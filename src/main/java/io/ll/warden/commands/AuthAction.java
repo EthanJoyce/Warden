@@ -120,8 +120,8 @@ public class AuthAction implements CommandExecutor {
     OWNER;
 
     public static AuthLevel getByOrdinal(int ord) {
-      for(AuthLevel al : AuthLevel.values()) {
-        if(al.ordinal() == ord) {
+      for (AuthLevel al : AuthLevel.values()) {
+        if (al.ordinal() == ord) {
           return al;
         }
       }

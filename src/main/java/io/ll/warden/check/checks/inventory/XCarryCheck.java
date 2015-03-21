@@ -27,11 +27,9 @@ import io.ll.warden.events.CheckFailedEvent;
  * Project: Warden
  * Usage: A check for XCarry
  *
- * This check works really simply. XCarry works by just
- * never sending the close inventory packet. So by
- * simply checking if the player is moving/looking around
- * while their inventory is open we can determine that they're
- * using XCarry because a in a vanilla game you can't do that.
+ * This check works really simply. XCarry works by just never sending the close inventory packet. So
+ * by simply checking if the player is moving/looking around while their inventory is open we can
+ * determine that they're using XCarry because a in a vanilla game you can't do that.
  */
 public class XCarryCheck extends Check implements PacketListener {
 
@@ -84,7 +82,7 @@ public class XCarryCheck extends Check implements PacketListener {
       }
     } else if (pt == PacketType.Play.Client.LOOK) {
       Player p = event.getPlayer();
-      if(map.contains(p.getUniqueId())) {
+      if (map.contains(p.getUniqueId())) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             p.getUniqueId(), getRaiseLevel(), getName()
         ));
@@ -98,7 +96,7 @@ public class XCarryCheck extends Check implements PacketListener {
       }
     } else if (pt == PacketType.Play.Client.CLOSE_WINDOW) {
       Player p = event.getPlayer();
-      if(map.contains(p.getUniqueId())) {
+      if (map.contains(p.getUniqueId())) {
         map.remove(p.getUniqueId());
       }
     }

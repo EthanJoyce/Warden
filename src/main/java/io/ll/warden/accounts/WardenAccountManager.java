@@ -220,10 +220,10 @@ public class WardenAccountManager implements CommandExecutor, Listener {
       }
     } else if (command.getName().equals("loginWarden") ||
                command.getName().equals("login")) {
-      if(sender instanceof Player) {
+      if (sender instanceof Player) {
         Player p = (Player) sender;
-        if(inUUIDList(p.getUniqueId())) {
-          if(args.length == 1) {
+        if (inUUIDList(p.getUniqueId())) {
+          if (args.length == 1) {
             p.sendMessage("Logging in...");
             try {
               ResultSet rs = db.querySQL(String.format("SELECT VERIFICATIONKEY,"
@@ -233,7 +233,7 @@ public class WardenAccountManager implements CommandExecutor, Listener {
                                                        p.getUniqueId().toString()));
               String verificationKey = rs.getString(1);
               int rankOrd = rs.getInt(2);
-              if(verificationKey.equals(PasswordUtils.hash(args[0]))) {
+              if (verificationKey.equals(PasswordUtils.hash(args[0]))) {
                 WardenAccount wa = new WardenAccount(p.getUniqueId(),
                                                      AuthAction.AuthLevel.getByOrdinal(rankOrd),
                                                      verificationKey.getBytes());
@@ -246,28 +246,28 @@ public class WardenAccountManager implements CommandExecutor, Listener {
               e1.printStackTrace();
               p.sendMessage("Failed to login! Error!");
             }
-          }else {
+          } else {
             p.sendMessage("Incorrect amount of args!");
           }
         }
-      }else {
+      } else {
         Warden.get().log("Sorry this command can't be executed from console!");
       }
     } else if (command.getName().equals("promoteWarden") ||
                command.getName().equals("pW")) {
-      if(sender instanceof Player) {
+      if (sender instanceof Player) {
         Player p = (Player) sender;
-        if(playerHasWardenAccount(p.getUniqueId())) {
+        if (playerHasWardenAccount(p.getUniqueId())) {
           p.sendMessage("This can't be executed from a player account!");
         }
       }
-      if(args.length != 2) {
+      if (args.length != 2) {
         Warden.get().log("Incorrect amount of args!");
         Warden.get().log("Try: /pW <user> <rank>");
       }
       String userName = args[0];
       AuthAction.AuthLevel al = AuthAction.AuthLevel.valueOf(args[1]);
-      if(al == null) {
+      if (al == null) {
         al = AuthAction.AuthLevel.USER;
       }
       UUID uuid = Bukkit.getPlayer(userName).getUniqueId();
@@ -278,13 +278,13 @@ public class WardenAccountManager implements CommandExecutor, Listener {
                                   al.ordinal(),
                                   uuid.toString()));
         //Check if he's logged in
-        if(playerHasWardenAccount(uuid)) {
+        if (playerHasWardenAccount(uuid)) {
           //Yep he is.
           WardenAccount wa = getWardenAccount(uuid);
           wa.setLevel(al);
           Warden.get().log("Logged in player!");
         }
-      }catch(Exception e1) {
+      } catch (Exception e1) {
         Warden.get().log("Failed to promote player!");
         e1.printStackTrace();
         return true;

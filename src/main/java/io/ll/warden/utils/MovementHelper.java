@@ -61,24 +61,54 @@ public class MovementHelper {
     return instance;
   }
 
+  /**
+   * Get the players latest location
+   *
+   * @param uuid The player
+   * @return The players latest location
+   */
   public Location getPlayerNLocation(UUID uuid) {
     List<Location> l = playerLocationMap.get(uuid);
     return l.get(l.size());
   }
 
+  /**
+   * Get the players second to last location
+   *
+   * @param uuid The player
+   * @return The players second to last location.
+   */
   public Location getPlayerNMinusOneLocation(UUID uuid) {
     List<Location> l = playerLocationMap.get(uuid);
     return l.get(l.size() - 1);
   }
 
+  /**
+   * Check if a player is falling
+   *
+   * @param uuid the player
+   * @return If mentioned player is falling
+   */
   public boolean isFalling(UUID uuid) {
     return fallingPlayers.contains(uuid);
   }
 
+  /**
+   * Check if the player is on the ground.
+   *
+   * @param uuid The player
+   * @return If the player is on the ground.
+   */
   public boolean isOnGround(UUID uuid) {
     return onGroundPlayers.contains(uuid);
   }
 
+  /**
+   * Check if the player is sprinting
+   *
+   * @param uuid The player
+   * @return If formentioned player is sprinting.
+   */
   public boolean isSprinting(UUID uuid) {
     return sprintingPlayers.contains(uuid);
   }
@@ -155,13 +185,13 @@ public class MovementHelper {
           Player p = packetEvent.getPlayer();
           PacketContainer pc = packetEvent.getPacket();
           int id = pc.getIntegers().read(2);
-          if(id == 3) {
-            if(!sprintingPlayers.contains(p.getUniqueId())) {
+          if (id == 3) {
+            if (!sprintingPlayers.contains(p.getUniqueId())) {
               sprintingPlayers.add(p.getUniqueId());
             }
-          }else if(id == 4) {
-            if(sprintingPlayers.contains(p.getUniqueId())) {
-              sprintingPlayers.add(p.getUniqueId());
+          } else if (id == 4) {
+            if (sprintingPlayers.contains(p.getUniqueId())) {
+              sprintingPlayers.remove(p.getUniqueId());
             }
           }
         }

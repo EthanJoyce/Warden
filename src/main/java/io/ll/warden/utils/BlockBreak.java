@@ -20,14 +20,29 @@ public class BlockBreak {
     this.broken = broken;
   }
 
+  /**
+   * Get the timer with location
+   *
+   * @return The timer with location.
+   */
   public TimerWithLoc getTwl() {
     return twl;
   }
 
+  /**
+   * Get what the block was broken with
+   *
+   * @return The type of item that was used to break the block.
+   */
   public Material getBrokeWith() {
     return brokeWith;
   }
 
+  /**
+   * Get the block that was broken
+   *
+   * @return The type of block that was destroyed.
+   */
   public Material getBroken() {
     return broken;
   }

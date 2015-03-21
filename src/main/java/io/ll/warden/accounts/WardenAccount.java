@@ -27,36 +27,78 @@ public class WardenAccount {
     this.needsVerification = new ArrayList<AuthAction.AuthCallback>();
   }
 
+  /**
+   * Checks if a password string is correct
+   *
+   * @param password The password to check
+   * @return If it's correct
+   */
   public boolean passwordCorrect(String password) {
     return passwordCorrect(PasswordUtils.hash(password).getBytes());
   }
 
+  /**
+   * Get it's auth level
+   *
+   * @return The current accounts auth level
+   */
   public AuthAction.AuthLevel getLevel() {
     return level;
   }
 
+  /**
+   * Set the auth level
+   *
+   * @param level Sets the current accounts auth level
+   */
   public void setLevel(AuthAction.AuthLevel level) {
     this.level = level;
   }
 
+  /**
+   * Determines if a hashed password is correct
+   *
+   * @param hashed The hashed password
+   * @return If it's correct
+   */
   public boolean passwordCorrect(byte[] hashed) {
     return hashedPassword.equals(hashed);
   }
 
+  /**
+   * Add an auth callback
+   *
+   * @param back For verifying commands. the auth callback
+   */
   public void addCallback(AuthAction.AuthCallback back) {
     needsVerification.add(back);
   }
 
+  /**
+   * Remove an AUTH callback
+   *
+   * @param back Remove it
+   */
   public void remCallback(AuthAction.AuthCallback back) {
-    if(needsVerification.contains(back)) {
+    if (needsVerification.contains(back)) {
       needsVerification.remove(back);
     }
   }
 
+  /**
+   * Get a list of all pending things that need verification
+   *
+   * @return Returns a list of all pending things that need verification.
+   */
   public List<AuthAction.AuthCallback> getVerifications() {
     return needsVerification;
   }
 
+  /**
+   * Get the players UUID
+   *
+   * @return Get the current accounts UUID.
+   */
   public UUID getPlayerUUID() {
     return playerUUID;
   }
