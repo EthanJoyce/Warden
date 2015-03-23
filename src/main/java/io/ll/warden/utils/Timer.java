@@ -1,7 +1,7 @@
 package io.ll.warden.utils;
 
 /**
- * Author: Brudin
+ * Author: Brudin, and Halalaboos appereantly
  * Date: 3/20/2015
  * Project: Warden
  * Usage: A simple Timer class.
