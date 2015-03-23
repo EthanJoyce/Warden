@@ -20,6 +20,10 @@ import io.ll.warden.utils.MovementHelper;
  * Date: 3/21/2015
  * Project: Warden
  * Usage: Checks reach distance in combat
+ *
+ * This is a fairly simple check. Check if the player is hitting
+ * someone farther away than they're allowed too. Make it a pretty
+ * low check because lagging people can hit this easily
  */
 public class ReachCheck extends Check implements Listener {
 
@@ -45,6 +49,7 @@ public class ReachCheck extends Check implements Listener {
       Location playerLocation = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
       Entity damaged = event.getEntity();
       Location damagedLocation = damaged.getLocation();
+      //TODO: Make this a not hardcoded value, and make more leninent for lagging players??
       if(MathHelper.getDistance3D(playerLocation, damagedLocation) >= 4.25) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             p.getUniqueId(), getRaiseLevel(), getName()

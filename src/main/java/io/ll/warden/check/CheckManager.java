@@ -85,14 +85,4 @@ public class CheckManager implements Listener {
     }
   }
 
-  /**
-   * Called when someone fails a check.
-   *
-   * @param event The event of people who have check failed event.
-   */
-  @EventHandler
-  public void onCheckFail(CheckFailedEvent event) {
-
-  }
-
 }

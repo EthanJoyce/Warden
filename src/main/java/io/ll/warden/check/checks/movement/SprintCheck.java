@@ -62,6 +62,7 @@ public class SprintCheck extends Check implements Listener {
             u, getRaiseLevel(), getName()
         ));
       }
+      //TODO: Check if player is sprinting into water, this can cause them to sprint in water
       if(BlockUtilities.get().isPlayerInLiquid(event.getPlayer())) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             u, getRaiseLevel(), getName()

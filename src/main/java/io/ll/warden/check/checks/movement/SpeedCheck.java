@@ -27,6 +27,8 @@ import io.ll.warden.utils.Timer;
  * Date: 3/21/2015
  * Project: Warden
  * Usage: A speed check
+ *
+ * Checks if a player is SANIC. GOTTA GO FAST.
  */
 public class SpeedCheck extends Check implements Listener {
 
@@ -73,7 +75,7 @@ public class SpeedCheck extends Check implements Listener {
       if(!(p.getGameMode() == GameMode.CREATIVE)) {
         Location now = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
         Location then = MovementHelper.get().getPlayerNMinusOneLocation(p.getUniqueId());
-
+        //TODO: Fix this up allows a speed of ~1.4 on pleb tier clients
         Location calcMax = then.multiply(multi).multiply((
             p.isSprinting() ? sprintSpeed : p.isSneaking() ? sneakSpeed : walkSpeed));
         if(MathHelper.getHorizontalDistance(then, calcMax) > MathHelper.getHorizontalDistance(

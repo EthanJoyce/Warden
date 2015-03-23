@@ -19,6 +19,8 @@ import io.ll.warden.utils.MovementHelper;
  * Date: 3/21/2015
  * Project: Warden
  * Usage: A simple block reach check
+ *
+ * Checks if a player is trying to Mr.Fantastic stretch, and place a block.
  */
 public class BlockReachCheck extends Check implements Listener {
 
