@@ -73,6 +73,8 @@ public class XCarryCheck extends Check implements PacketListener {
   @Override
   public void onPacketReceiving(PacketEvent event) {
     PacketType pt = event.getPacketType();
+    //A player's inventory will actually close if he gets hit before this event is fired off.
+    //So no need to check for hits.
     if (pt == PacketType.Play.Client.POSITION) {
       Player p = event.getPlayer();
       if (map.contains(p.getUniqueId())) {

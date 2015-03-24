@@ -1,7 +1,8 @@
 package io.ll.warden.utils;
 
 /**
- * Author: Brudin, and Halalaboos appereantly
+ * Author: Halalaboos appereantly
+ * One or two functions added by: LordLambda
  * Date: 3/20/2015
  * Project: Warden
  * Usage: A simple Timer class.
@@ -19,6 +20,10 @@ public class Timer {
    */
   public boolean hasReach(float seconds) {
     return getTimePassed() >= (seconds * 1000);
+  }
+
+  public boolean hasReachMS(long mill) {
+    return getTimePassed() >= mill;
   }
 
   public void stop() {

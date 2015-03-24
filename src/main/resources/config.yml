@@ -197,6 +197,8 @@ GrabPass: myAwesomePassword6328
 WALKDISTANCE: 1.0
 SPRINTDISTANCE: 1.4
 SNEAKDISTANCE: 0.5
+BLOCKPLACEVALUE: 80
+FIGHTFREQUENCY: 100
 
 ###############################################
 #

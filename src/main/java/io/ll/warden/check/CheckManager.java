@@ -38,6 +38,10 @@ public class CheckManager implements Listener {
     checks.add(new ReachCheck());
     checks.add(new SpeedCheck());
     checks.add(new BlockReachCheck());
+    checks.add(new WindowClickSpeedCheck());
+    checks.add(new FightFrequencyCheck());
+    checks.add(new SelfHitCheck());
+    checks.add(new BlockPlaceSpeedCheck());
   }
 
   /**

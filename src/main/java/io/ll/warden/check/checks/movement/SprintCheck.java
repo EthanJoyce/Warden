@@ -57,13 +57,8 @@ public class SprintCheck extends Check implements Listener {
         return;
       }
       Location l = sprintingPlayers.get(u);
-      if (MathHelper.getDistance3D(l, mh.getPlayerNLocation(u)) < 1) {
-        Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
-            u, getRaiseLevel(), getName()
-        ));
-      }
-      //TODO: Check if player is sprinting into water, this can cause them to sprint in water
-      if(BlockUtilities.get().isPlayerInLiquid(event.getPlayer())) {
+      if (MathHelper.getDistance3D(l, mh.getPlayerNLocation(u)) < 1 &&
+          !BlockUtilities.get().isPlayerInLiquid(event.getPlayer())) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             u, getRaiseLevel(), getName()
         ));
