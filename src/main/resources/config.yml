@@ -169,6 +169,20 @@ GrabDomain: GOOGLE
 GrabUser: myemail@gmail.com
 GrabPass: myAwesomePassword6328
 
+###############################################
+#
+# Next in our stop is violation levels. This
+# is where the configuration goes for how many
+# "Points" it causes someone to reach a
+# certain level of hackerness, and at what
+# level they should be banned. So yeeeeee
+#
+###############################################
+SMALLTIME: 15
+MID: 30
+HIGH: 50
+HIGHEST: 75
+BANAT: HIGH
 
 ###############################################
 #

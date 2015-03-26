@@ -272,7 +272,7 @@ public class WardenAccountManager implements CommandExecutor, Listener {
       }
       UUID uuid = Bukkit.getPlayer(userName).getUniqueId();
       try {
-        db.querySQL(String.format("UPDATE WARDEN"
+        db.querySQL(String.format("UPDATE Warden"
                                   + " SET RANK=%d"
                                   + " WHERE UUID='%s'",
                                   al.ordinal(),
@@ -356,7 +356,7 @@ public class WardenAccountManager implements CommandExecutor, Listener {
       }.run();
     }
     try {
-      ResultSet rs = db.querySQL(String.format("SELECT * FROM WARDEN "
+      ResultSet rs = db.querySQL(String.format("SELECT * FROM Warden "
                                                + "WHERE UUID=\"%s\"", p.getUniqueId()));
       if (rs.next()) {
         p.sendMessage("You have a Warden account. Please Log-In.");

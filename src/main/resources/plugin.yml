@@ -22,3 +22,7 @@ commands:
     description: Promote someones warden account
     usage: /pW <user> <level>
     aliases: pW
+  pardonWarden:
+    description: Unbans someone who was banned by warden.
+    usage: /pardW <user>
+    aliases: pardW

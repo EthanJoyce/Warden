@@ -57,7 +57,7 @@ public abstract class Database {
    *
    * @return Connection with the database, null if none
    */
-  public Connection getConnection() {
+  public synchronized Connection getConnection() {
     return connection;
   }
 
@@ -86,7 +86,7 @@ public abstract class Database {
    * @throws SQLException           If the query cannot be executed
    * @throws ClassNotFoundException If the driver cannot be found; see {@link #openConnection()}
    */
-  public ResultSet querySQL(String query) throws SQLException,
+  public synchronized ResultSet querySQL(String query) throws SQLException,
                                                  ClassNotFoundException {
     if (!checkConnection()) {
       openConnection();
@@ -108,7 +108,7 @@ public abstract class Database {
    * @throws SQLException           If the query cannot be executed
    * @throws ClassNotFoundException If the driver cannot be found; see {@link #openConnection()}
    */
-  public int updateSQL(String query) throws SQLException,
+  public synchronized int updateSQL(String query) throws SQLException,
                                             ClassNotFoundException {
     if (!checkConnection()) {
       openConnection();

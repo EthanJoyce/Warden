@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import io.ll.warden.accounts.WardenAccountManager;
 import io.ll.warden.check.CheckManager;
 import io.ll.warden.commands.AuthAction;
+import io.ll.warden.commands.WardenPardon;
+import io.ll.warden.heuristics.BanManager;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
 import io.ll.warden.storage.SQLite;
@@ -89,6 +91,11 @@ public class Warden extends JavaPlugin {
     }
     log("Done.");
 
+    log("Setting up BanManager...");
+    BanManager.get();
+    BanManager.get().setup(this, db);
+    log("Done.");
+
     log("Registering commands...");
     getCommand("verify").setExecutor(AuthAction.get());
     WardenAccountManager wam = WardenAccountManager.get();
@@ -97,6 +104,7 @@ public class Warden extends JavaPlugin {
     getCommand("registerWarden").setExecutor(wam);
     getCommand("loginWarden").setExecutor(wam);
     getCommand("promoteWarden").setExecutor(wam);
+    getCommand("pardonWarden").setExecutor(new WardenPardon());
     log("Done.");
 
     log("Setting up CheckManager.");
