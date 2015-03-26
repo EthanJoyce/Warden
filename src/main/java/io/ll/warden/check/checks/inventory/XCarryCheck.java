@@ -77,7 +77,7 @@ public class XCarryCheck extends Check implements PacketListener {
     //So no need to check for hits.
     if (pt == PacketType.Play.Client.POSITION) {
       Player p = event.getPlayer();
-      if (map.contains(p.getUniqueId())) {
+      if (map.contains(p.getUniqueId()) && !BlockUtilities.get().isPlayerInLiquid(p)) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             p.getUniqueId(), getRaiseLevel(), getName()
         ));
