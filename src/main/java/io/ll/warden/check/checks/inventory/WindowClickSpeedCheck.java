@@ -53,7 +53,7 @@ public class WindowClickSpeedCheck extends Check implements PacketListener {
 
   @Override
   public float getRaiseLevel() {
-    return 0.03f;
+    return 0.3f;
   }
 
   @Override
