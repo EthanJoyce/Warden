@@ -9,6 +9,7 @@ package io.ll.warden.utils.zopfli;
 public class ZopfliCookie {
 
   static class Node {
+
     int weight;
     Node tail;
     int count;
@@ -153,9 +154,7 @@ public class ZopfliCookie {
   }
 
   /**
-   * Maximum amount of blocks to split into.
-   * <p/>
-   * {@code 0} for unlimited.
+   * Maximum amount of blocks to split into. <p/> {@code 0} for unlimited.
    */
   final int blockSplittingMax = 15;
 

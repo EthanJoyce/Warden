@@ -76,31 +76,33 @@ public class XCarryCheck extends Check implements PacketListener {
     PacketType pt = event.getPacketType();
     //A player's inventory will actually close if he gets hit before this event is fired off.
     //So no need to check for hits.
-    if (pt == PacketType.Play.Client.POSITION) {
-      Player p = event.getPlayer();
-      if (map.contains(p.getUniqueId()) && !BlockUtilities.get().isPlayerInLiquid(p)) {
-        Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
-            p.getUniqueId(), getRaiseLevel(), getName()
-        ));
-      }
-    } else if (pt == PacketType.Play.Client.LOOK) {
-      Player p = event.getPlayer();
-      if (map.contains(p.getUniqueId())) {
-        Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
-            p.getUniqueId(), getRaiseLevel(), getName()
-        ));
-      }
-    } else if (pt == PacketType.Play.Client.ENTITY_ACTION) {
-      Player p = event.getPlayer();
-      PacketContainer pc = event.getPacket();
-      int actionID = pc.getIntegers().read(2);
-      if (actionID == 6) {
-        map.add(p.getUniqueId());
-      }
-    } else if (pt == PacketType.Play.Client.CLOSE_WINDOW) {
-      Player p = event.getPlayer();
-      if (map.contains(p.getUniqueId())) {
-        map.remove(p.getUniqueId());
+    if (shouldCheckPlayer(event.getPlayer().getUniqueId())) {
+      if (pt == PacketType.Play.Client.POSITION) {
+        Player p = event.getPlayer();
+        if (map.contains(p.getUniqueId()) && !BlockUtilities.get().isPlayerInLiquid(p)) {
+          Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
+              p.getUniqueId(), getRaiseLevel(), getName()
+          ));
+        }
+      } else if (pt == PacketType.Play.Client.LOOK) {
+        Player p = event.getPlayer();
+        if (map.contains(p.getUniqueId())) {
+          Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
+              p.getUniqueId(), getRaiseLevel(), getName()
+          ));
+        }
+      } else if (pt == PacketType.Play.Client.ENTITY_ACTION) {
+        Player p = event.getPlayer();
+        PacketContainer pc = event.getPacket();
+        int actionID = pc.getIntegers().read(2);
+        if (actionID == 6) {
+          map.add(p.getUniqueId());
+        }
+      } else if (pt == PacketType.Play.Client.CLOSE_WINDOW) {
+        Player p = event.getPlayer();
+        if (map.contains(p.getUniqueId())) {
+          map.remove(p.getUniqueId());
+        }
       }
     }
   }

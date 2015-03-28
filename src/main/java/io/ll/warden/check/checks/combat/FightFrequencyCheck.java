@@ -45,18 +45,20 @@ public class FightFrequencyCheck extends Check implements Listener {
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
     Entity e = event.getDamager();
-    if(e instanceof Player) {
+    if (e instanceof Player) {
       Player p = (Player) e;
-      if(!map.containsKey(p.getUniqueId())) {
-        map.put(p.getUniqueId(), new Timer());
-      }
-      Timer t = map.get(p.getUniqueId());
-      if(!t.hasReachMS(MS_VALUE)) {
-        Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
-            p.getUniqueId(), getRaiseLevel(), getName()
-        ));
-      }else {
-        t.reset();
+      if (shouldCheckPlayer(p.getUniqueId())) {
+        if (!map.containsKey(p.getUniqueId())) {
+          map.put(p.getUniqueId(), new Timer());
+        }
+        Timer t = map.get(p.getUniqueId());
+        if (!t.hasReachMS(MS_VALUE)) {
+          Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
+              p.getUniqueId(), getRaiseLevel(), getName()
+          ));
+        } else {
+          t.reset();
+        }
       }
     }
   }

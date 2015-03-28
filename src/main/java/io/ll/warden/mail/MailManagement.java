@@ -22,9 +22,9 @@ public class MailManagement {
   }
 
   public static MailManagement get() {
-    if(instance == null) {
-      synchronized(MailManagement.class) {
-        if(instance == null) {
+    if (instance == null) {
+      synchronized (MailManagement.class) {
+        if (instance == null) {
           instance = new MailManagement();
         }
       }

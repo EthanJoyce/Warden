@@ -63,9 +63,9 @@ public class ZopfliSymbolStats {
     long[] lLiterals = this.lLiterals;
     for (int i = 0; i < 288; ++i) {
       if (litLens[i] == 0) {
-        lLiterals[i] = (long)log2sum;
+        lLiterals[i] = (long) log2sum;
       } else {
-        lLiterals[i] = (long)(log2sum - Math.log(litLens[i]) * INV_LOG_2);
+        lLiterals[i] = (long) (log2sum - Math.log(litLens[i]) * INV_LOG_2);
       }
       if (lLiterals[i] < 0) {
         lLiterals[i] = 0;
@@ -89,9 +89,9 @@ public class ZopfliSymbolStats {
     long[] dSymbols = this.dSymbols;
     for (int i = 0; i < 32; ++i) {
       if (dists[i] == 0) {
-        dSymbols[i] = (long)log2sum;
+        dSymbols[i] = (long) log2sum;
       } else {
-        dSymbols[i] = (long)(log2sum - Math.log(dists[i]) * INV_LOG_2);
+        dSymbols[i] = (long) (log2sum - Math.log(dists[i]) * INV_LOG_2);
       }
       if (dSymbols[i] < 0) {
         dSymbols[i] = 0;

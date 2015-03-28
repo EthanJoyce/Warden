@@ -43,17 +43,19 @@ public class BlockPlaceSpeedCheck extends Check implements Listener {
   @EventHandler
   public void onBlockPlace(BlockPlaceEvent event) {
     Player p = event.getPlayer();
-    if(!map.containsKey(p.getUniqueId())) {
-      map.put(p.getUniqueId(), new Timer());
-      return;
-    }
-    Timer t = map.get(p.getUniqueId());
-    if(!t.hasReachMS(MS_LIMIT)) {
-      Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
-          p.getUniqueId(), getRaiseLevel(), getName()
-      ));
-    } else {
-      t.reset();
+    if (shouldCheckPlayer(p.getUniqueId())) {
+      if (!map.containsKey(p.getUniqueId())) {
+        map.put(p.getUniqueId(), new Timer());
+        return;
+      }
+      Timer t = map.get(p.getUniqueId());
+      if (!t.hasReachMS(MS_LIMIT)) {
+        Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
+            p.getUniqueId(), getRaiseLevel(), getName()
+        ));
+      } else {
+        t.reset();
+      }
     }
   }
 

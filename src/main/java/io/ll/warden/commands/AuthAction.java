@@ -83,7 +83,7 @@ public class AuthAction implements CommandExecutor {
       } else {
         for (AuthCallback ac : toAuthBackToo) {
           if (ac.getAuthBackName().equalsIgnoreCase(args[0])) {
-            ac.onCallback( ((Player) sender).getUniqueId() , wa.getLevel());
+            ac.onCallback(((Player) sender).getUniqueId(), wa.getLevel());
             wa.remCallback(ac);
             if (wa.getVerifications().size() == 0) {
               toAuthBackTooAccounts.remove(wa);
@@ -137,6 +137,6 @@ public class AuthAction implements CommandExecutor {
 
     public String getAuthBackName();
 
-    public void onCallback(UUID u,AuthLevel level);
+    public void onCallback(UUID u, AuthLevel level);
   }
 }

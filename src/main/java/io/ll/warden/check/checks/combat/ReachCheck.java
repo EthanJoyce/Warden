@@ -44,16 +44,18 @@ public class ReachCheck extends Check implements Listener {
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
     Entity e = event.getDamager();
-    if(e instanceof Player) {
+    if (e instanceof Player) {
       Player p = (Player) e;
-      Location playerLocation = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
-      Entity damaged = event.getEntity();
-      Location damagedLocation = damaged.getLocation();
-      //TODO: Make this a not hardcoded value, and make more leninent for lagging players??
-      if(MathHelper.getDistance3D(playerLocation, damagedLocation) >= 4.25) {
-        Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
-            p.getUniqueId(), getRaiseLevel(), getName()
-        ));
+      if (shouldCheckPlayer(p.getUniqueId())) {
+        Location playerLocation = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
+        Entity damaged = event.getEntity();
+        Location damagedLocation = damaged.getLocation();
+        //TODO: Make this a not hardcoded value, and make more leninent for lagging players??
+        if (MathHelper.getDistance3D(playerLocation, damagedLocation) >= 4.25) {
+          Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
+              p.getUniqueId(), getRaiseLevel(), getName()
+          ));
+        }
       }
     }
   }

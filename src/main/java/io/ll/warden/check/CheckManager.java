@@ -1,6 +1,5 @@
 package io.ll.warden.check;
 
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 
@@ -15,7 +14,6 @@ import io.ll.warden.check.checks.inventory.*;
 import io.ll.warden.check.checks.movement.*;
 import io.ll.warden.check.checks.world.*;
 import io.ll.warden.commands.AuthAction;
-import io.ll.warden.events.CheckFailedEvent;
 
 /**
  * Creator: LordLambda
@@ -42,6 +40,9 @@ public class CheckManager implements Listener {
     checks.add(new FightFrequencyCheck());
     checks.add(new SelfHitCheck());
     checks.add(new BlockPlaceSpeedCheck());
+    checks.add(new GhostHitCheck());
+    checks.add(new InvalidMovementCheck());
+    checks.add(new NoFallCheck());
   }
 
   /**

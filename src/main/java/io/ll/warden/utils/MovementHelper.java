@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.ll.warden.Warden;
+import io.ll.warden.events.FallEvent;
 import io.ll.warden.events.PlayerTrueMoveEvent;
 
 /**
@@ -33,6 +34,7 @@ public class MovementHelper {
 
   private static MovementHelper instance;
   private LinkedHashMap<UUID, List<Location>> playerLocationMap;
+  private LinkedHashMap<UUID, Location> startFalling;
   private List<UUID> onGroundPlayers;
   private List<UUID> fallingPlayers;
   private List<UUID> sprintingPlayers;
@@ -41,6 +43,7 @@ public class MovementHelper {
 
   protected MovementHelper() {
     playerLocationMap = new LinkedHashMap<UUID, List<Location>>();
+    startFalling = new LinkedHashMap<UUID, Location>();
     inBound = ListeningWhitelist.newBuilder()
         .highest().gamePhase(GamePhase.PLAYING).build();
     outBound = ListeningWhitelist.newBuilder()
@@ -173,11 +176,19 @@ public class MovementHelper {
           if (onGround) {
             if (fallingPlayers.contains(p.getUniqueId())) {
               fallingPlayers.remove(p.getUniqueId());
+              Location l = startFalling.get(p.getUniqueId());
+              startFalling.remove(p.getUniqueId());
+              if(l.getY() - getPlayerNLocation(p.getUniqueId()).getY() > 1) {
+                Bukkit.getPluginManager().callEvent(new FallEvent(
+                    p, l, getPlayerNLocation(p.getUniqueId())
+                ));
+              }
             }
             onGroundPlayers.add(p.getUniqueId());
           } else {
             if (onGroundPlayers.contains(p.getUniqueId())) {
               onGroundPlayers.remove(p.getUniqueId());
+              startFalling.put(p.getUniqueId(), getPlayerNLocation(p.getUniqueId()));
             }
             fallingPlayers.add(p.getUniqueId());
           }

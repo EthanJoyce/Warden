@@ -8,7 +8,8 @@ package io.ll.warden.utils.zopfli;
  */
 public class ZopfliSqueeze {
 
-  static ZopfliLzStore optimal(ZopfliCookie cookie, int numIterations, ZopfliLongestMatchCache lmc, byte[] input, int from, int to) {
+  static ZopfliLzStore optimal(ZopfliCookie cookie, int numIterations, ZopfliLongestMatchCache lmc,
+                               byte[] input, int from, int to) {
     ZopfliLzStore currentStore = cookie.store1;
     currentStore.reset();
     ZopfliLzStore store = cookie.store2;
@@ -30,7 +31,9 @@ public class ZopfliSqueeze {
       currentStore.reset();
       bestLengths(cookie, lmc, from, input, from, to, stats.minCost(), stats, lengthArray, costs);
       optimalRun(cookie, lmc, input, from, to, lengthArray, currentStore);
-      cost = ZopfliDeflate.calculateBlockSize(cookie, currentStore.litLens, currentStore.dists, 0, currentStore.size);
+      cost =
+          ZopfliDeflate.calculateBlockSize(cookie, currentStore.litLens, currentStore.dists, 0,
+                                           currentStore.size);
       if (cost < bestCost) {
         store.copy(currentStore);
         bestStats.copy(stats);
@@ -53,7 +56,8 @@ public class ZopfliSqueeze {
     return store;
   }
 
-  static void optimalRun(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input, int from, int to,
+  static void optimalRun(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input, int from,
+                         int to,
                          char[] lengthArray, ZopfliLzStore store) {
     // assert from != to
     char[] path = cookie.path;
@@ -95,8 +99,11 @@ public class ZopfliSqueeze {
       }
       return 9;
     } else {
-      long cost = 12 + (dist < 4097 ? ZopfliUtil.CACHED_DIST_EXTRA_BITS[dist] : dist < 16385 ? dist < 8193 ? 11 : 12 : 13)
-                  + ZopfliUtil.LENGTH_EXTRA_BITS[litLen];
+      long
+          cost =
+          12 + (dist < 4097 ? ZopfliUtil.CACHED_DIST_EXTRA_BITS[dist]
+                            : dist < 16385 ? dist < 8193 ? 11 : 12 : 13)
+          + ZopfliUtil.LENGTH_EXTRA_BITS[litLen];
       if (ZopfliUtil.LENGTH_SYMBOL[litLen] > 279) {
         return cost + 1;
       }
@@ -104,8 +111,10 @@ public class ZopfliSqueeze {
     }
   }
 
-  private static void bestLengths(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, int blockStart, byte[] input, int from, int to,
-                                  long minCost, ZopfliSymbolStats stats, char[] lengthArray, long[] costs) {
+  private static void bestLengths(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, int blockStart,
+                                  byte[] input, int from, int to,
+                                  long minCost, ZopfliSymbolStats stats, char[] lengthArray,
+                                  long[] costs) {
     //# WINDOW_SIZE = 0x8000
     //# WINDOW_MASK = 0x7FFF
     //# MAX_MATCH = 258
@@ -133,7 +142,8 @@ public class ZopfliSqueeze {
     while (i < to) {
       h.updateHash(input, i, to);
 
-      if (same[i & 0x7FFF] > 516 && i > from + 259 && i + 517 < to && same[(i - 258) & 0x7FFF] > 258) {
+      if (same[i & 0x7FFF] > 516 && i > from + 259 && i + 517 < to
+          && same[(i - 258) & 0x7FFF] > 258) {
         for (int k = 0; k < 258; ++k) {
           costs[j + 258] = costs[j] + stepCost;
           lengthArray[j + 258] = 258;
@@ -174,7 +184,8 @@ public class ZopfliSqueeze {
     }
   }
 
-  static void bestFixedLengths(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input, int from, int to,
+  static void bestFixedLengths(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input,
+                               int from, int to,
                                char[] lengthArray, long[] costs) {
     int windowStart = Math.max(from - 0x8000, 0);
     ZopfliHash h = cookie.h;

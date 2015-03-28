@@ -63,30 +63,32 @@ public class WindowClickSpeedCheck extends Check implements PacketListener {
   @Override
   public void onPacketReceiving(PacketEvent event) {
     PacketType pt = event.getPacketType();
-    if(pt == PacketType.Play.Client.WINDOW_CLICK) {
-      Player p = event.getPlayer();
-      if(!map.containsKey(p.getUniqueId())) {
-        map.put(p.getUniqueId(), new Timer());
-      }else {
-        Timer t = map.get(p.getUniqueId());
-        if(!t.hasReachMS(87)) {
-          Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
-              p.getUniqueId(), getRaiseLevel(), getName()
-          ));
-        }else {
-          t.reset();
+    if (shouldCheckPlayer(event.getPlayer().getUniqueId())) {
+      if (pt == PacketType.Play.Client.WINDOW_CLICK) {
+        Player p = event.getPlayer();
+        if (!map.containsKey(p.getUniqueId())) {
+          map.put(p.getUniqueId(), new Timer());
+        } else {
+          Timer t = map.get(p.getUniqueId());
+          if (!t.hasReachMS(87)) {
+            Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
+                p.getUniqueId(), getRaiseLevel(), getName()
+            ));
+          } else {
+            t.reset();
+          }
         }
+      } else if (pt == PacketType.Play.Client.ENTITY_ACTION) {
+        Player p = event.getPlayer();
+        PacketContainer pc = event.getPacket();
+        int actionID = pc.getIntegers().read(2);
+        if (actionID == 6) {
+          map.put(p.getUniqueId(), new Timer());
+        }
+      } else if (pt == PacketType.Play.Client.CLOSE_WINDOW) {
+        Player p = event.getPlayer();
+        map.remove(p.getUniqueId());
       }
-    } else if (pt == PacketType.Play.Client.ENTITY_ACTION) {
-      Player p = event.getPlayer();
-      PacketContainer pc = event.getPacket();
-      int actionID = pc.getIntegers().read(2);
-      if(actionID == 6) {
-        map.put(p.getUniqueId(), new Timer());
-      }
-    } else if (pt == PacketType.Play.Client.CLOSE_WINDOW) {
-      Player p = event.getPlayer();
-      map.remove(p.getUniqueId());
     }
   }
 

@@ -41,21 +41,21 @@ public class WardenPardon implements CommandExecutor, AuthAction.AuthCallback {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
-    if(!(sender instanceof Player)) {
+    if (!(sender instanceof Player)) {
       Warden.get().log("WardenPardon can only be called by a player [With appropriate perms]!");
       return true;
     }
     Player pSender = (Player) sender;
-    if(!WardenAccountManager.get().playerHasWardenAccount(pSender.getUniqueId())) {
+    if (!WardenAccountManager.get().playerHasWardenAccount(pSender.getUniqueId())) {
       return true;
     }
     WardenAccount wardenAccount = WardenAccountManager.get()
         .getWardenAccount(pSender.getUniqueId());
-    if(wardenAccount.getLevel() != AuthAction.AuthLevel.ADMIN ||
+    if (wardenAccount.getLevel() != AuthAction.AuthLevel.ADMIN ||
         wardenAccount.getLevel() != AuthAction.AuthLevel.OWNER) {
       pSender.sendMessage("This command can only be called by Admins or Owners.");
     }
-    if(!(args.length == 1)) {
+    if (!(args.length == 1)) {
       pSender.sendMessage("You must only specify a player name to be unbanned!");
     }
     String playerName = args[0];
@@ -63,7 +63,7 @@ public class WardenPardon implements CommandExecutor, AuthAction.AuthCallback {
     try {
       toUnBan = UUIDFetcher.getUUIDOf(playerName);
       //TODO: Check if player was banned by warden
-    }catch(Exception e1) {
+    } catch (Exception e1) {
       pSender.sendMessage("Failed to grab players UUID!");
       e1.printStackTrace();
       return true;

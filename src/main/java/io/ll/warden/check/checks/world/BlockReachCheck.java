@@ -35,15 +35,17 @@ public class BlockReachCheck extends Check implements Listener {
 
   @EventHandler
   public void onBlockPlace(BlockPlaceEvent event) {
-    double down = MathHelper.getDistance3D(event.getBlock().getLocation(),
-                                           MovementHelper.get().getPlayerNLocation(
-                                               event.getPlayer().getUniqueId()
-                                           ));
-    if (down > getReachDistance(event.getPlayer())) {
-      Bukkit.getPluginManager().callEvent(
-          new CheckFailedEvent(event.getPlayer().getUniqueId(),
-                               getRaiseLevel(), getName())
-      );
+    if (shouldCheckPlayer(event.getPlayer().getUniqueId())) {
+      double down = MathHelper.getDistance3D(event.getBlock().getLocation(),
+                                             MovementHelper.get().getPlayerNLocation(
+                                                 event.getPlayer().getUniqueId()
+                                             ));
+      if (down > getReachDistance(event.getPlayer())) {
+        Bukkit.getPluginManager().callEvent(
+            new CheckFailedEvent(event.getPlayer().getUniqueId(),
+                                 getRaiseLevel(), getName())
+        );
+      }
     }
   }
 

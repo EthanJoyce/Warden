@@ -58,36 +58,41 @@ public class SpeedCheck extends Check implements Listener {
   @EventHandler
   public void onMoveEvent(PlayerTrueMoveEvent event) {
     Player p = event.getPlayer();
-    Timer t = map.get(p.getUniqueId());
-    if(t.hasReach(2)) {
-      t.stop();
-      long timePassed = t.getFinalCheck() - t.getLastCheck();
-      long secondsPassed = timePassed * 1000;
-      t.reset();
+    if (shouldCheckPlayer(p.getUniqueId())) {
+      Timer t = map.get(p.getUniqueId());
+      if (t.hasReach(2)) {
+        t.stop();
+        long timePassed = t.getFinalCheck() - t.getLastCheck();
+        long secondsPassed = timePassed * 1000;
+        t.reset();
 
-      if(p.isInsideVehicle()) {
-        return;
-      }
-
-      double multi = getSpeedMultiplier(p);
-      boolean inWeb = BlockUtilities.get().isPlayerInWeb(p);
-
-      if(!(p.getGameMode() == GameMode.CREATIVE)) {
-        Location now = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
-        Location then = MovementHelper.get().getPlayerNMinusOneLocation(p.getUniqueId());
-        //TODO: Fix this up allows a speed of ~1.4 on pleb tier clients
-        Location calcMax = then.multiply(multi).multiply((
-            p.isSprinting() ? sprintSpeed : p.isSneaking() ? sneakSpeed : walkSpeed));
-        if(MathHelper.getHorizontalDistance(then, calcMax) > MathHelper.getHorizontalDistance(
-            then, now)) {
-          Bukkit.getServer().getPluginManager().callEvent(
-              new CheckFailedEvent(
-                  p.getUniqueId(), getRaiseLevel(), getName()
-              )
-          );
+        if (p.isInsideVehicle()) {
+          return;
         }
-      }else {
-        //Should I even do this?
+
+        double multi = getSpeedMultiplier(p);
+        boolean inWeb = BlockUtilities.get().isPlayerInWeb(p);
+
+        if (!(p.getGameMode() == GameMode.CREATIVE)) {
+          Location now = MovementHelper.get().getPlayerNLocation(p.getUniqueId());
+          Location then = MovementHelper.get().getPlayerNMinusOneLocation(p.getUniqueId());
+          //TODO: Fix this up allows a speed of ~1.4 on pleb tier clients
+          Location calcMax = then.multiply(multi).multiply((
+                                                               p.isSprinting() ? sprintSpeed
+                                                                               : p.isSneaking()
+                                                                                 ? sneakSpeed
+                                                                                 : walkSpeed));
+          if (MathHelper.getHorizontalDistance(then, calcMax) > MathHelper.getHorizontalDistance(
+              then, now)) {
+            Bukkit.getServer().getPluginManager().callEvent(
+                new CheckFailedEvent(
+                    p.getUniqueId(), getRaiseLevel(), getName()
+                )
+            );
+          }
+        } else {
+          //Should I even do this?
+        }
       }
     }
   }
@@ -108,18 +113,18 @@ public class SpeedCheck extends Check implements Listener {
 
   public double getSpeedMultiplier(Player p) {
     double multi = 1.0;
-    if(BlockUtilities.get().isOnIce(p)) {
+    if (BlockUtilities.get().isOnIce(p)) {
       multi *= 1.4;
     }
     boolean inWeb = BlockUtilities.get().isPlayerInWeb(p);
-    if(inWeb) {
+    if (inWeb) {
       multi *= 0.12;
     }
-    if(!MovementHelper.get().isOnGround(p.getUniqueId())) {
+    if (!MovementHelper.get().isOnGround(p.getUniqueId())) {
       multi *= 1.5;
     }
     multi *= getSpeedAmplifier(p);
-    if(p.isBlocking()) {
+    if (p.isBlocking()) {
       multi *= 0.5;
     }
     return multi;

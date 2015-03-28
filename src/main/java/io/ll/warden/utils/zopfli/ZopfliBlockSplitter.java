@@ -91,7 +91,8 @@ public class ZopfliBlockSplitter {
     return numBlocks;
   }
 
-  private static int findMinimum(ZopfliCookie cookie, char[] litLens, char[] dists, int from, int to) {
+  private static int findMinimum(ZopfliCookie cookie, char[] litLens, char[] dists, int from,
+                                 int to) {
     int start = from + 1;
     int end = to;
     if (end - start < 1024) {

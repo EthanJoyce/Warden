@@ -25,7 +25,7 @@ public class ZopfliOptions {
   public final OutputFormat outputType;
 
   public ZopfliOptions(OutputFormat outputType, BlockSplitting blockSplitting,
-                 int numIterations) {
+                       int numIterations) {
     this.outputType = outputType;
     this.blockSplitting = blockSplitting;
     this.numIterations = numIterations;

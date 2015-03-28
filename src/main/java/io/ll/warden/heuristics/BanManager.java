@@ -33,7 +33,7 @@ public class BanManager implements Listener {
 
   private static BanManager instance;
   private Database db;
-  private  HashMap<UUID, ViolationLevelWithPoints> hackerMap;
+  private HashMap<UUID, ViolationLevelWithPoints> hackerMap;
   private FileConfiguration config;
   private HashMap<UUID, String[]> waitingForVerification;
   private List<UUID> bannedByWarden;
@@ -53,9 +53,9 @@ public class BanManager implements Listener {
     constantBanThread = new Thread() {
       @Override
       public void run() {
-        for(UUID u : bannedByWarden) {
+        for (UUID u : bannedByWarden) {
           Player p = Bukkit.getServer().getPlayer(u);
-          if(!p.isBanned()) {
+          if (!p.isBanned()) {
             p.setBanned(true);
           }
         }
@@ -64,24 +64,24 @@ public class BanManager implements Listener {
     constanstCheckBanThread = new Thread() {
       @Override
       public void run() {
-        for(UUID u : hackerMap.keySet()) {
+        for (UUID u : hackerMap.keySet()) {
           ViolationLevelWithPoints vlwp = hackerMap.get(u);
           int points = vlwp.getPoints();
           ViolationLevel vl = pointsToLevel(points);
-          if(vl != vlwp.getLevel()) {
-            while(dbMutex) {
+          if (vl != vlwp.getLevel()) {
+            while (dbMutex) {
               //Wait for DB to open up
             }
             dbMutex = true;
             try {
               db.querySQL(String.format("UPDATE WardenBans SET HLEVEL=%d WHERE"
                                         + "UUID='%s'", vl.ordinal(), u));
-            }catch(Exception e1) {
+            } catch (Exception e1) {
               Warden.get().log("Failed to update players level on DB!");
               e1.printStackTrace();
             }
             dbMutex = false;
-            while(hackerMapMutex) {
+            while (hackerMapMutex) {
               //Wait for it to open up
             }
             hackerMapMutex = true;
@@ -90,16 +90,16 @@ public class BanManager implements Listener {
           }
           //Update if neccesarry
           vlwp = hackerMap.get(u);
-          if(vlwp.getLevel().ordinal() >= banAt.ordinal()) {
+          if (vlwp.getLevel().ordinal() >= banAt.ordinal()) {
             Bukkit.getPlayer(u).setBanned(true);
-            while(dbMutex) {
+            while (dbMutex) {
               //Wait
             }
             dbMutex = true;
             try {
               db.querySQL(String.format("UPDATE WardenBans SET ISBANNEDBYWARDEN=1 WHERE"
                                         + "UUID='%s'", u));
-            }catch(Exception e1) {
+            } catch (Exception e1) {
               Warden.get().log("Failed to update player banned on DB!");
               e1.printStackTrace();
             }
@@ -113,16 +113,16 @@ public class BanManager implements Listener {
 
   public void setup(Warden w, Database db) {
     config = w.getConfig();
-    pointsNeededPerLevel = new int[] {
+    pointsNeededPerLevel = new int[]{
         0, config.getInt("SMALLTIME"), config.getInt("MID"), config.getInt("HIGH"),
         config.getInt("HIGHEST")
     };
     banAt = ViolationLevel.valueOf(config.getString("BANAT"));
-    if(banAt == null) {
+    if (banAt == null) {
       banAt = ViolationLevel.HIGH;
     }
     this.db = db;
-    while(dbMutex) {
+    while (dbMutex) {
       //Wait for it to open
     }
     dbMutex = true;
@@ -135,11 +135,11 @@ public class BanManager implements Listener {
                        + "PRIMARY KEY (UUID)"
                        + ")");
       ResultSet rs = this.db.querySQL("SELECT UUID From WardenBans");
-      while(rs.next()) {
+      while (rs.next()) {
         UUID uuid = UUID.fromString(rs.getString("UUID"));
         int points = rs.getInt("HPOINTS");
       }
-    }catch(Exception e1) {
+    } catch (Exception e1) {
       w.log(Level.SEVERE, "Failed to connect to with the DB table for BanManagement! This is fatal!"
                           + " So therefore warden will now shut everything down!");
       e1.printStackTrace();
@@ -152,9 +152,9 @@ public class BanManager implements Listener {
   }
 
   public static BanManager get() {
-    if(instance == null) {
-      synchronized(BanManager.class) {
-        if(instance == null) {
+    if (instance == null) {
+      synchronized (BanManager.class) {
+        if (instance == null) {
           instance = new BanManager();
         }
       }
@@ -170,7 +170,7 @@ public class BanManager implements Listener {
       public void run() {
         UUID u = event.getPlayer();
         ViolationLevelWithPoints vlwp = hackerMap.get(u);
-        while(hackerMapMutex) {
+        while (hackerMapMutex) {
           //Wait
         }
         hackerMapMutex = true;
@@ -178,14 +178,14 @@ public class BanManager implements Listener {
                                                                        (int) event.getDamage()));
         hackerMapMutex = false;
         vlwp = hackerMap.get(u);
-        while(dbMutex) {
+        while (dbMutex) {
           //Wait for it to open.
         }
         dbMutex = true;
         try {
           db.querySQL(String.format("UPDATE WardenBans SET HPOINTS=%d WHERE"
                                     + "UUID='%s'", vlwp.getPoints(), u));
-        }catch(Exception e1) {
+        } catch (Exception e1) {
           Warden.get().log("Failed to update player point record!");
           e1.printStackTrace();
         }
@@ -197,9 +197,9 @@ public class BanManager implements Listener {
 
   @EventHandler
   public void playerLoginEvent(PlayerLoginEvent event) {
-    if(!hackerMap.containsKey(event.getPlayer().getUniqueId())) {
+    if (!hackerMap.containsKey(event.getPlayer().getUniqueId())) {
       //First time login add to table
-      while(dbMutex) {
+      while (dbMutex) {
         //Wait for it to open
       }
       dbMutex = true;
@@ -207,11 +207,11 @@ public class BanManager implements Listener {
         db.querySQL(String.format("INSERT INTO WardenBans ("
                                   + "UUID, HLEVEL, HPOINTS, ISBANNEDBYWARDEN)"
                                   + "VALUES ('%s', 0, 0, 0)", event.getPlayer().getUniqueId()));
-      }catch(Exception e1) {
+      } catch (Exception e1) {
         Warden.get().log("Failed to add player to ban table!");
       }
       dbMutex = false;
-      while(hackerMapMutex) {
+      while (hackerMapMutex) {
         //Wait
       }
       hackerMapMutex = true;
@@ -222,15 +222,15 @@ public class BanManager implements Listener {
   }
 
   private ViolationLevel pointsToLevel(int points) {
-    if(points < pointsNeededPerLevel[1]) {
+    if (points < pointsNeededPerLevel[1]) {
       return ViolationLevel.NONE;
-    }else if(points >= pointsNeededPerLevel[1] && points < pointsNeededPerLevel[2]) {
+    } else if (points >= pointsNeededPerLevel[1] && points < pointsNeededPerLevel[2]) {
       return ViolationLevel.SMALLTIME;
-    }else if(points >= pointsNeededPerLevel[2] && points < pointsNeededPerLevel[3]) {
+    } else if (points >= pointsNeededPerLevel[2] && points < pointsNeededPerLevel[3]) {
       return ViolationLevel.MID;
-    }else if(points >= pointsNeededPerLevel[3] && points < pointsNeededPerLevel[4]) {
+    } else if (points >= pointsNeededPerLevel[3] && points < pointsNeededPerLevel[4]) {
       return ViolationLevel.HIGH;
-    }else if(points >= pointsNeededPerLevel[5]) {
+    } else if (points >= pointsNeededPerLevel[5]) {
       return ViolationLevel.BRUDIN;
     }
     return null;
@@ -244,8 +244,8 @@ public class BanManager implements Listener {
     BRUDIN; //Also known as HIGHEST
 
     public static ViolationLevel getByOrdinal(int ord) {
-      for(ViolationLevel vl : values()) {
-        if(vl.ordinal() == ord) {
+      for (ViolationLevel vl : values()) {
+        if (vl.ordinal() == ord) {
           return vl;
         }
       }

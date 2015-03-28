@@ -59,7 +59,8 @@ public class ZopfliKatajainen {
     }
   }
 
-  private static void boundaryPm(ZopfliCookie cookie, Node[] leaves, Node[] list0, Node[] list1, int numSymbols, int index,
+  private static void boundaryPm(ZopfliCookie cookie, Node[] leaves, Node[] list0, Node[] list1,
+                                 int numSymbols, int index,
                                  boolean last) {
     int lastCount = list1[index].count;
 
@@ -89,12 +90,13 @@ public class ZopfliKatajainen {
     int length = high - low;
 
     if (length < 7) {
-      for (int i = low + 1; i < high; i++)
+      for (int i = low + 1; i < high; i++) {
         for (int j = i, k = i - 1; j > low && (dest[k].weight > dest[j].weight); --j, --k) {
           Node t = dest[j];
           dest[j] = dest[k];
           dest[k] = t;
         }
+      }
       return;
     }
 
@@ -103,10 +105,11 @@ public class ZopfliKatajainen {
     sort(dest, src, mid, high);
 
     for (int i = low, p = low, q = mid; i < high; i++) {
-      if (q >= high || p < mid && (src[p].weight <= src[q].weight))
+      if (q >= high || p < mid && (src[p].weight <= src[q].weight)) {
         dest[i] = src[p++];
-      else
+      } else {
         dest[i] = src[q++];
+      }
     }
   }
 }

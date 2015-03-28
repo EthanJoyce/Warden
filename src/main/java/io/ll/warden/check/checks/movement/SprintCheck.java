@@ -44,24 +44,32 @@ public class SprintCheck extends Check implements Listener {
   @EventHandler
   public void onMove(PlayerTrueMoveEvent event) {
     UUID u = event.getPlayer().getUniqueId();
-    MovementHelper mh = MovementHelper.get();
-    if (mh.isFalling(u) && mh.isSprinting(u)) {
-      Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
-          u, getRaiseLevel(), getName()
-      ));
-      return;
-    }
-    if (mh.isSprinting(u)) {
-      if (!sprintingPlayers.containsKey(u)) {
-        sprintingPlayers.put(u, mh.getPlayerNLocation(u));
-        return;
-      }
-      Location l = sprintingPlayers.get(u);
-      if (MathHelper.getDistance3D(l, mh.getPlayerNLocation(u)) < 1 &&
-          !BlockUtilities.get().isPlayerInLiquid(event.getPlayer())) {
+    if (shouldCheckPlayer(u)) {
+      MovementHelper mh = MovementHelper.get();
+      if (mh.isFalling(u) && mh.isSprinting(u)) {
         Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
             u, getRaiseLevel(), getName()
         ));
+        return;
+      }
+      if (mh.isSprinting(u)) {
+        if (!sprintingPlayers.containsKey(u)) {
+          sprintingPlayers.put(u, mh.getPlayerNLocation(u));
+          return;
+        }
+        Location l = sprintingPlayers.get(u);
+        if (MathHelper.getDistance3D(l, mh.getPlayerNLocation(u)) < 1 &&
+            !BlockUtilities.get().isPlayerInLiquid(event.getPlayer())) {
+          Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
+              u, getRaiseLevel(), getName()
+          ));
+        }
+        if (event.getPlayer().getFoodLevel() <= 3) {
+          //If the player is still trying to sprint but doesn't have the food required
+          Bukkit.getServer().getPluginManager().callEvent(new CheckFailedEvent(
+              u, getRaiseLevel(), getName()
+          ));
+        }
       }
     }
   }

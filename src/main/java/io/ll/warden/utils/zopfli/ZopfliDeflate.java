@@ -37,7 +37,8 @@ public class ZopfliDeflate {
     }
   }
 
-  public static void greedy(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input, int from, int to, ZopfliLzStore store) {
+  public static void greedy(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, byte[] input,
+                            int from, int to, ZopfliLzStore store) {
     ZopfliHash h = cookie.h;
     h.init(input, Math.max(from - 0x8000, 0), from, to);
     int prevLength = 0;
@@ -91,7 +92,8 @@ public class ZopfliDeflate {
     }
   }
 
-  static void findLongestMatch(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, int blockStart, ZopfliHash h, byte[] array,
+  static void findLongestMatch(ZopfliCookie cookie, ZopfliLongestMatchCache lmc, int blockStart,
+                               ZopfliHash h, byte[] array,
                                int pos, int size, int limit, char[] subLen) {
     //# WINDOW_SIZE = 0x8000
     //# WINDOW_MASK = 0x7FFF
@@ -193,13 +195,14 @@ public class ZopfliDeflate {
       --chainCounter;
     }
 
-    if (lmc != null && limit == 258 && subLen != null && lmcLength[offset] != 0 && lmc.dist[offset] == 0) {
+    if (lmc != null && limit == 258 && subLen != null && lmcLength[offset] != 0
+        && lmc.dist[offset] == 0) {
       if (bestLength < 3) {
         lmc.dist[offset] = 0;
         lmcLength[offset] = 0;
       } else {
-        lmc.dist[offset] = (char)bestDist;
-        lmcLength[offset] = (char)bestLength;
+        lmc.dist[offset] = (char) bestDist;
+        lmcLength[offset] = (char) bestLength;
       }
       lmc.subLenToCache(subLen, offset, bestLength);
     }
@@ -208,7 +211,8 @@ public class ZopfliDeflate {
     cookie.lenVal = bestLength;
   }
 
-  private static void deflatePart(ZopfliCookie cookie, ZopfliOptions options, byte[] input, int from, int to, boolean flush,
+  private static void deflatePart(ZopfliCookie cookie, ZopfliOptions options, byte[] input,
+                                  int from, int to, boolean flush,
                                   ZopfliBuffer output) {
     // assert from != to
     switch (options.blockSplitting) {
@@ -226,19 +230,23 @@ public class ZopfliDeflate {
     }
   }
 
-  private static void deflateDynamicBlock(ZopfliCookie cookie, ZopfliOptions options, boolean flush, byte[] input,
+  private static void deflateDynamicBlock(ZopfliCookie cookie, ZopfliOptions options, boolean flush,
+                                          byte[] input,
                                           int from, int to, ZopfliBuffer output) {
     // assert from != to
     ZopfliLongestMatchCache lmc = cookie.lmc;
     lmc.init(to - from);
 
     BlockType type = BlockType.DYNAMIC;
-    ZopfliLzStore store = ZopfliSqueeze.optimal(cookie, options.numIterations, lmc, input, from, to);
+    ZopfliLzStore
+        store =
+        ZopfliSqueeze.optimal(cookie, options.numIterations, lmc, input, from, to);
 
     if (store.size < 1000) {
       ZopfliLzStore fixedStore = cookie.store1;
       fixedStore.reset();
-      ZopfliSqueeze.bestFixedLengths(cookie, lmc, input, from, to, cookie.lengthArray, cookie.costs);
+      ZopfliSqueeze
+          .bestFixedLengths(cookie, lmc, input, from, to, cookie.lengthArray, cookie.costs);
       ZopfliSqueeze.optimalRun(cookie, lmc, input, from, to, cookie.lengthArray, fixedStore);
       int dynCost = calculateBlockSize(cookie, store.litLens, store.dists, 0, store.size);
       int fixedCost = calculateFixedBlockSize(cookie, fixedStore.litLens,
@@ -252,13 +260,16 @@ public class ZopfliDeflate {
     addLzBlock(cookie, type, flush, store.litLens, store.dists, 0, store.size, output);
   }
 
-  private static void deflateSplittingLast(ZopfliCookie cookie, ZopfliOptions options, boolean flush,
+  private static void deflateSplittingLast(ZopfliCookie cookie, ZopfliOptions options,
+                                           boolean flush,
                                            byte[] input, int from, int to, ZopfliBuffer output) {
     // assert from != to
     ZopfliLongestMatchCache lmc = cookie.lmc;
     lmc.init(to - from);
 
-    ZopfliLzStore store = ZopfliSqueeze.optimal(cookie, options.numIterations, lmc, input, from, to);
+    ZopfliLzStore
+        store =
+        ZopfliSqueeze.optimal(cookie, options.numIterations, lmc, input, from, to);
 
     int nPoints = ZopfliBlockSplitter.splitLz(cookie, store.litLens, store.dists, store.size);
 
@@ -266,21 +277,25 @@ public class ZopfliDeflate {
     for (int i = 1; i <= nPoints; i++) {
       int start = splitPoints[i - 1];
       int end = splitPoints[i];
-      addLzBlock(cookie, BlockType.DYNAMIC, i == nPoints && flush, store.litLens, store.dists, start, end, output);
+      addLzBlock(cookie, BlockType.DYNAMIC, i == nPoints && flush, store.litLens, store.dists,
+                 start, end, output);
     }
   }
 
-  private static void deflateSplittingFirst(ZopfliCookie cookie, ZopfliOptions options, boolean flush,
+  private static void deflateSplittingFirst(ZopfliCookie cookie, ZopfliOptions options,
+                                            boolean flush,
                                             byte[] input, int from, int to, ZopfliBuffer output) {
     // assert from != to
     int nPoints = ZopfliBlockSplitter.split(cookie, input, from, to);
     int[] splitPoints = cookie.splitPoints;
     for (int i = 1; i <= nPoints; ++i) {
-      deflateDynamicBlock(cookie, options, i == nPoints && flush, input, splitPoints[i - 1], splitPoints[i], output);
+      deflateDynamicBlock(cookie, options, i == nPoints && flush, input, splitPoints[i - 1],
+                          splitPoints[i], output);
     }
   }
 
-  static int calculateBlockSize(ZopfliCookie cookie, char[] litLens, char[] dists, int lStart, int lEnd) {
+  static int calculateBlockSize(ZopfliCookie cookie, char[] litLens, char[] dists, int lStart,
+                                int lEnd) {
     int[] llLengths = cookie.i288a;
     System.arraycopy(ZopfliCookie.intZeroes, 0, llLengths, 0, 288);
     int[] dLengths = cookie.i32a;
@@ -313,7 +328,6 @@ public class ZopfliDeflate {
     }
     llCounts[256] = 1;
 
-
     int[] llCountsCopy = cookie.i288c;
     System.arraycopy(llCounts, 0, llCountsCopy, 0, 288);
     optimizeHuffmanForRle(cookie, llCountsCopy);
@@ -336,7 +350,8 @@ public class ZopfliDeflate {
     return result;
   }
 
-  private static int calculateFixedBlockSize(ZopfliCookie cookie, char[] litLens, char[] dists, int size) {
+  private static int calculateFixedBlockSize(ZopfliCookie cookie, char[] litLens, char[] dists,
+                                             int size) {
     int[] llLengths = cookie.i288a;
     int[] dLengths = cookie.i32a;
     getFixedTree(llLengths, dLengths);
@@ -364,7 +379,8 @@ public class ZopfliDeflate {
     return result;
   }
 
-  private static void lzCounts(char[] litLens, char[] dists, int start, int end, int[] llCount, int[] dCount) {
+  private static void lzCounts(char[] litLens, char[] dists, int start, int end, int[] llCount,
+                               int[] dCount) {
     int[] lengthSymbol = ZopfliUtil.LENGTH_SYMBOL;
     int[] cachedDistSymbol = ZopfliUtil.CACHED_DIST_SYMBOL;
     for (int i = start; i < end; i++) {
@@ -381,7 +397,8 @@ public class ZopfliDeflate {
     llCount[256] = 1;
   }
 
-  static void compress(ZopfliCookie cookie, ZopfliOptions options, byte[] input, ZopfliBuffer output) {
+  static void compress(ZopfliCookie cookie, ZopfliOptions options, byte[] input,
+                       ZopfliBuffer output) {
     int i = 0;
     while (i < input.length) {
       int j = Math.min(i + cookie.masterBlockSize, input.length);
@@ -409,19 +426,23 @@ public class ZopfliDeflate {
     }
   }
 
-  private static void addDynamicTree(ZopfliCookie cookie, int[] llLengths, int[] dLengths, ZopfliBuffer output) {
+  private static void addDynamicTree(ZopfliCookie cookie, int[] llLengths, int[] dLengths,
+                                     ZopfliBuffer output) {
     int best = 0;
     int bestSize = Integer.MAX_VALUE;
 
-    for(int i = 0; i < 8; i++) {
-      int size = simulateEncodeTree(cookie, llLengths, dLengths, (i & 1) != 0, (i & 2) != 0, (i & 4) != 0);
+    for (int i = 0; i < 8; i++) {
+      int
+          size =
+          simulateEncodeTree(cookie, llLengths, dLengths, (i & 1) != 0, (i & 2) != 0, (i & 4) != 0);
       if (size < bestSize) {
         bestSize = size;
         best = i;
       }
     }
 
-    encodeTree(cookie, llLengths, dLengths, (best & 1) != 0, (best & 2) != 0, (best & 4) != 0, output);
+    encodeTree(cookie, llLengths, dLengths, (best & 1) != 0, (best & 2) != 0, (best & 4) != 0,
+               output);
   }
 
   private static void encodeTree(ZopfliCookie cookie, int[] llLengths, int[] dLengths,
@@ -535,8 +556,10 @@ public class ZopfliDeflate {
   private static int simulateAddDynamicTree(ZopfliCookie cookie, int[] llLengths, int[] dLengths) {
     int bestSize = Integer.MAX_VALUE;
 
-    for(int i = 0; i < 8; i++) {
-      int size = simulateEncodeTree(cookie, llLengths, dLengths, (i & 1) != 0, (i & 2) != 0, (i & 4) != 0);
+    for (int i = 0; i < 8; i++) {
+      int
+          size =
+          simulateEncodeTree(cookie, llLengths, dLengths, (i & 1) != 0, (i & 2) != 0, (i & 4) != 0);
       if (size < bestSize) {
         bestSize = size;
       }
@@ -632,7 +655,8 @@ public class ZopfliDeflate {
     return result;
   }
 
-  private static void addLzBlock(ZopfliCookie cookie, BlockType type, boolean last, char[] litLens, char[] dists,
+  private static void addLzBlock(ZopfliCookie cookie, BlockType type, boolean last, char[] litLens,
+                                 char[] dists,
                                  int lStart, int lEnd, ZopfliBuffer output) {
     int[] llLengths = cookie.i288a;
     System.arraycopy(ZopfliCookie.intZeroes, 0, llLengths, 0, 288);
@@ -675,7 +699,8 @@ public class ZopfliDeflate {
   }
 
   private static void addLzData(char[] litLens, char[] dists, int lStart, int lEnd,
-                                int[] llSymbols, int[] llLengths, int[] dSymbols, int[] dLengths, ZopfliBuffer output) {
+                                int[] llSymbols, int[] llLengths, int[] dSymbols, int[] dLengths,
+                                ZopfliBuffer output) {
     int[] cachedDistExtraBits = ZopfliUtil.CACHED_DIST_EXTRA_BITS;
     int[] lengthExtraBits = ZopfliUtil.LENGTH_EXTRA_BITS;
     int[] lengthExtraBitsValue = ZopfliUtil.LENGTH_EXTRA_BITS_VALUE;
@@ -693,12 +718,14 @@ public class ZopfliDeflate {
         output.addBits(lengthExtraBitsValue[litLen], lengthExtraBits[litLen]);
         output.addHuffmanBits(dSymbols[ds], dLengths[ds]);
         output.addBits(ZopfliUtil.distExtraBitsValue(dist),
-                       dist < 4097 ? cachedDistExtraBits[dist] : dist < 16385 ? dist < 8193 ? 11 : 12 : 13);
+                       dist < 4097 ? cachedDistExtraBits[dist]
+                                   : dist < 16385 ? dist < 8193 ? 11 : 12 : 13);
       }
     }
   }
 
-  private static void lengthsToSymbols(int[] lengths, int n, int maxBits, int[] symbols, int[] blCount, int[] nextCode) {
+  private static void lengthsToSymbols(int[] lengths, int n, int maxBits, int[] symbols,
+                                       int[] blCount, int[] nextCode) {
     System.arraycopy(ZopfliCookie.intZeroes, 0, blCount, 0, maxBits + 1);
     System.arraycopy(ZopfliCookie.intZeroes, 0, nextCode, 0, maxBits + 1);
     for (int i = 0; i < n; ++i) {
@@ -754,10 +781,13 @@ public class ZopfliDeflate {
     int limit = counts[0];
     int sum = 0;
     for (int i = 0; i < length + 1; ++i) {
-      if ((i == length) || (goodForRle[i] != 0) || (counts[i] - limit >= 4) || (limit - counts[i] >= 4)) {
+      if ((i == length) || (goodForRle[i] != 0) || (counts[i] - limit >= 4) || (limit - counts[i]
+                                                                                >= 4)) {
         if ((stride >= 4) || ((stride >= 3) && (sum == 0))) {
           int count = (sum + stride / 2) / stride;
-          if (count < 1) count = 1;
+          if (count < 1) {
+            count = 1;
+          }
           if (sum == 0) {
             count = 0;
           }

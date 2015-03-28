@@ -50,7 +50,7 @@ public class Warden extends JavaPlugin {
   public void onEnable() {
     instance = this;
     l = getLogger();
-    if(!(new File(getDataFolder(), "config.yml")).exists()) {
+    if (!(new File(getDataFolder(), "config.yml")).exists()) {
       saveDefaultConfig();
     }
     usingLongLog = getConfig().getBoolean("LongLogMessage");

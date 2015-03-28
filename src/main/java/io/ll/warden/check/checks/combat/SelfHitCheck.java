@@ -34,12 +34,14 @@ public class SelfHitCheck extends Check implements Listener {
 
   @EventHandler
   public void onDamage(EntityDamageByEntityEvent event) {
-    if(event.getDamager() instanceof Player &&
+    if (event.getDamager() instanceof Player &&
         event.getEntity() instanceof Player) {
-      if(((Player) event.getDamager()).equals((Player) event.getEntity())) {
-        Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
-            ((Player) event.getDamager()).getUniqueId(), getRaiseLevel(), getName()
-        ));
+      if (shouldCheckPlayer(((Player) event.getDamager()).getUniqueId())) {
+        if (((Player) event.getDamager()).equals((Player) event.getEntity())) {
+          Bukkit.getPluginManager().callEvent(new CheckFailedEvent(
+              ((Player) event.getDamager()).getUniqueId(), getRaiseLevel(), getName()
+          ));
+        }
       }
     }
   }
