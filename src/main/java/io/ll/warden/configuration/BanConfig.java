@@ -9,7 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import io.ll.warden.Warden;
 import io.ll.warden.heuristics.BanReport;
@@ -35,7 +37,19 @@ public class BanConfig extends Config implements Listener {
       name = prettyName + ".bc";
       load(new File(name));
     }else {
-      prettyName = name.substring(0, name.indexOf('.'));
+      prettyName = name.substring(0, name.lastIndexOf('.'));
+      this.name = name;
+      load(new File(name));
+    }
+  }
+
+  public BanConfig(String name, boolean full) throws IOException {
+    if(!full) {
+      prettyName = name;
+      name = prettyName + ".bc";
+      load(new File(name));
+    }else {
+      prettyName = name.substring(0, name.lastIndexOf('.'));
       this.name = name;
       load(new File(name));
     }
@@ -50,7 +64,8 @@ public class BanConfig extends Config implements Listener {
       return;
     }
     this.file = file;
-
+    bans = new ArrayList<BanReport>();
+    checks = new ArrayList<CheckFailedReport>();
     FileInputStream fis = new FileInputStream(file);
     byte[] bFile = new byte[(int) file.length()];
     fis.read(bFile);
@@ -61,11 +76,22 @@ public class BanConfig extends Config implements Listener {
     while((line = br.readLine()) != null) {
       String[] split = line.split(",");
       if(split[0].equalsIgnoreCase("BAN")) {
-
+        if(split.length == 3) {
+          String time = split[1];
+          float pointsAtBan = Float.parseFloat(split[2]);
+          bans.add(new BanReport(time, pointsAtBan));
+        }
       }else if(split[0].equalsIgnoreCase("CHECK")) {
-
+        if(split.length == 5) {
+          String time = split[1];
+          String nameOfCheck = split[2];
+          UUID u = UUID.fromString(split[3]);
+          float raiseValue = Float.parseFloat(split[4]);
+          checks.add(new CheckFailedReport(time, nameOfCheck, raiseValue, u.toString()));
+        }
       }
     }
+    br.close();
   }
 
   @Override
