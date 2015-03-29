@@ -1,7 +1,5 @@
 package io.ll.warden.configuration;
 
-import org.bukkit.event.Listener;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,6 +14,7 @@ import java.util.UUID;
 import io.ll.warden.Warden;
 import io.ll.warden.heuristics.BanReport;
 import io.ll.warden.heuristics.CheckFailedReport;
+import io.ll.warden.utils.jodd.JDateTime;
 
 /**
  * Creator: LordLambda
@@ -23,7 +22,7 @@ import io.ll.warden.heuristics.CheckFailedReport;
  * Project: Warden
  * Usage: A ban config
  */
-public class BanConfig extends Config implements Listener {
+public class BanConfig extends Config {
 
   private List<BanReport> bans;
   private List<CheckFailedReport> checks;
@@ -94,6 +93,22 @@ public class BanConfig extends Config implements Listener {
     br.close();
   }
 
+  public List<BanReport> getBanReports() {
+    return bans;
+  }
+
+  public List<CheckFailedReport> getChecksFailed() {
+    return checks;
+  }
+
+  public int getTotalBans() {
+    return bans.size();
+  }
+
+  public int getTotalChecksFailed() {
+    return checks.size();
+  }
+
   @Override
   public String getFullName() {
     return name;
@@ -108,10 +123,52 @@ public class BanConfig extends Config implements Listener {
   protected void onShutdown() {
     try {
       FileOutputStream fos = new FileOutputStream(file);
-
+      ConfigManager cm = ConfigManager.get();
+      for(BanReport br : bans) {
+        //I space it out like this so it's easier for people to follow
+        //Even though a String.format() would be easier if people
+        //want to write their own parsing tools I want to make it
+        //as easy as possible.
+        String toWrite = "BAN,";
+        toWrite += br.getTimeAsString();
+        toWrite += ",";
+        toWrite += String.valueOf(br.getPointsAtBan());
+        byte[] asBytes = toWrite.getBytes();
+        fos.write(cm.compress(asBytes));
+      }
+      for(CheckFailedReport cfr : checks) {
+        //I space it out like this so it's easier for people to follow
+        //Even though a String.format() would be easier if people
+        //want to write their own parsing tools I want to make it
+        //as easy as possible.
+        String toWrite = "CHECK,";
+        toWrite += cfr.getTimeAsString();
+        toWrite += ",";
+        toWrite  += cfr.getNameOfCheck();
+        toWrite += ",";
+        toWrite += cfr.getPlayerUUID();
+        toWrite += ",";
+        toWrite += String.valueOf(cfr.getRaiseValue());
+        byte[] asBytes = toWrite.getBytes();
+        fos.write(cm.compress(asBytes));
+      }
+      fos.close();
     }catch(IOException e1) {
-      Warden.get().log("Failed to load file...");
+      Warden.get().log("Failed to save file...");
       e1.printStackTrace();
     }
+  }
+
+  public void addCheckFailed(String nameOfCheck, UUID playerUUID, float raiseValue) {
+    JDateTime time = new JDateTime(System.currentTimeMillis());
+    CheckFailedReport cfr = new CheckFailedReport(time.toString(), nameOfCheck, raiseValue,
+                                                  playerUUID.toString());
+    checks.add(cfr);
+  }
+
+  public void addBan(float pointsAtBan) {
+    JDateTime time = new JDateTime(System.currentTimeMillis());
+    BanReport br = new BanReport(time.toString(), pointsAtBan);
+    bans.add(br);
   }
 }

@@ -10,16 +10,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
 import io.ll.warden.Warden;
+import io.ll.warden.commands.AuthAction;
+import io.ll.warden.configuration.BanConfig;
+import io.ll.warden.events.BanEvent;
 import io.ll.warden.events.CheckFailedEvent;
 import io.ll.warden.storage.Database;
+import io.ll.warden.utils.UUIDFetcher;
 import io.ll.warden.utils.ViolationLevelWithPoints;
 
 /**
@@ -30,28 +37,26 @@ import io.ll.warden.utils.ViolationLevelWithPoints;
  *
  * This also handles things like when people fail checks what level of "Hacker" they are at.
  */
-public class BanManager implements Listener, CommandExecutor {
-
-  //TODO: Create real mutex type things instead of this crappy boolean system.
+public class BanManager implements Listener, CommandExecutor, AuthAction.AuthCallback {
 
   private static BanManager instance;
   private Database db;
-  private HashMap<UUID, ViolationLevelWithPoints> hackerMap;
+  private ConcurrentHashMap<UUID, ViolationLevelWithPoints> hackerMap;
   private FileConfiguration config;
-  private HashMap<UUID, String[]> waitingForVerification;
+  private ConcurrentHashMap<UUID, String[]> waitingForVerification;
+  private ConcurrentHashMap<UUID, BanConfig> banConfigs;
   private List<UUID> bannedByWarden;
   private Thread constantBanThread;
   private Thread constanstCheckBanThread;
   private int[] pointsNeededPerLevel;
   private ViolationLevel banAt;
-  private boolean dbMutex;
-  private boolean hackerMapMutex;
+  private Lock dbLock;
 
   protected BanManager() {
-    dbMutex = false;
-    hackerMapMutex = false;
-    hackerMap = new HashMap<UUID, ViolationLevelWithPoints>();
-    waitingForVerification = new HashMap<UUID, String[]>();
+    dbLock = new ReentrantLock();
+    hackerMap = new ConcurrentHashMap<UUID, ViolationLevelWithPoints>();
+    banConfigs = new ConcurrentHashMap<UUID, BanConfig>();
+    waitingForVerification = new ConcurrentHashMap<UUID, String[]>();
     bannedByWarden = new ArrayList<UUID>();
     constantBanThread = new Thread() {
       @Override
@@ -72,42 +77,36 @@ public class BanManager implements Listener, CommandExecutor {
           int points = vlwp.getPoints();
           ViolationLevel vl = pointsToLevel(points);
           if (vl != vlwp.getLevel()) {
-            while (dbMutex) {
-              //Wait for DB to open up
-            }
-            dbMutex = true;
+            dbLock.lock();
             try {
               db.querySQL(String.format("UPDATE WardenBans SET HLEVEL=%d WHERE"
                                         + "UUID='%s'", vl.ordinal(), u));
             } catch (Exception e1) {
               Warden.get().log("Failed to update players level on DB!");
               e1.printStackTrace();
+            }finally {
+              dbLock.unlock();
             }
-            dbMutex = false;
-            while (hackerMapMutex) {
-              //Wait for it to open up
-            }
-            hackerMapMutex = true;
             hackerMap.put(u, new ViolationLevelWithPoints(vl, points));
-            hackerMapMutex = false;
           }
           //Update if neccesarry
           vlwp = hackerMap.get(u);
           if (vlwp.getLevel().ordinal() >= banAt.ordinal()) {
             Bukkit.getPlayer(u).setBanned(true);
-            while (dbMutex) {
-              //Wait
-            }
-            dbMutex = true;
+            dbLock.lock();
             try {
               db.querySQL(String.format("UPDATE WardenBans SET ISBANNEDBYWARDEN=1 WHERE"
                                         + "UUID='%s'", u));
             } catch (Exception e1) {
               Warden.get().log("Failed to update player banned on DB!");
               e1.printStackTrace();
+            }finally {
+              dbLock.unlock();
             }
-            dbMutex = false;
             bannedByWarden.add(u);
+            Bukkit.getPluginManager().callEvent(new BanEvent(
+              u, points
+            ));
           }
         }
       }
@@ -125,10 +124,7 @@ public class BanManager implements Listener, CommandExecutor {
       banAt = ViolationLevel.HIGH;
     }
     this.db = db;
-    while (dbMutex) {
-      //Wait for it to open
-    }
-    dbMutex = true;
+    dbLock.lock();
     try {
       this.db.querySQL("CREATE TABLE IF NOT EXISTS WardenBans"
                        + "(UUID varchar(36) NOT NULL,"
@@ -147,8 +143,25 @@ public class BanManager implements Listener, CommandExecutor {
                           + " So therefore warden will now shut everything down!");
       e1.printStackTrace();
       System.exit(-980);
+    }finally {
+      dbLock.unlock();
     }
-    dbMutex = false;
+    File banDir = new File(w.getDataFolder(), "Warden/Bans");
+    if(!banDir.exists()) {
+      banDir.mkdir();
+    }else {
+      for(File f : banDir.listFiles()) {
+        try {
+          BanConfig bc = new BanConfig(f.getName(), true);
+          UUID uuid = UUID.fromString(bc.getFullName().substring(0, bc.getFullName()
+              .lastIndexOf('.')));
+          banConfigs.put(uuid, bc);
+        }catch(Exception e1) {
+          w.log(String.format("Failed to load banconfig: [ %s ]", f.getAbsolutePath()));
+          e1.printStackTrace();
+        }
+      }
+    }
     Bukkit.getPluginManager().registerEvents(this, w);
     constanstCheckBanThread.start();
     constantBanThread.start();
@@ -173,54 +186,48 @@ public class BanManager implements Listener, CommandExecutor {
       public void run() {
         UUID u = event.getPlayer();
         ViolationLevelWithPoints vlwp = hackerMap.get(u);
-        while (hackerMapMutex) {
-          //Wait
-        }
-        hackerMapMutex = true;
         hackerMap.put(u, new ViolationLevelWithPoints(vlwp.getLevel(), vlwp.getPoints() +
                                                                        (int) event.getDamage()));
-        hackerMapMutex = false;
         vlwp = hackerMap.get(u);
-        while (dbMutex) {
-          //Wait for it to open.
-        }
-        dbMutex = true;
+        dbLock.lock();
         try {
           db.querySQL(String.format("UPDATE WardenBans SET HPOINTS=%d WHERE"
                                     + "UUID='%s'", vlwp.getPoints(), u));
         } catch (Exception e1) {
           Warden.get().log("Failed to update player point record!");
           e1.printStackTrace();
+        }finally {
+          dbLock.unlock();
         }
-        dbMutex = false;
       }
     }.run();
-    //TODO: Log, and keep track for emails?
+    BanConfig bc = banConfigs.get(event.getPlayer());
+    bc.addCheckFailed(event.getCheckName(), event.getPlayer(), event.getDamage());
+  }
+
+  @EventHandler
+  public void onBan(final BanEvent event) {
+    //SQL was already executed. Now we need to save to file.
+    BanConfig bc = banConfigs.get(event.getUUID());
+    bc.addBan(event.getPoints());
   }
 
   @EventHandler
   public void playerLoginEvent(PlayerLoginEvent event) {
     if (!hackerMap.containsKey(event.getPlayer().getUniqueId())) {
       //First time login add to table
-      while (dbMutex) {
-        //Wait for it to open
-      }
-      dbMutex = true;
+      dbLock.lock();
       try {
         db.querySQL(String.format("INSERT INTO WardenBans ("
                                   + "UUID, HLEVEL, HPOINTS, ISBANNEDBYWARDEN)"
                                   + "VALUES ('%s', 0, 0, 0)", event.getPlayer().getUniqueId()));
       } catch (Exception e1) {
         Warden.get().log("Failed to add player to ban table!");
+      }finally {
+        dbLock.unlock();
       }
-      dbMutex = false;
-      while (hackerMapMutex) {
-        //Wait
-      }
-      hackerMapMutex = true;
       hackerMap.put(event.getPlayer().getUniqueId(), new ViolationLevelWithPoints(
           ViolationLevel.NONE, 0));
-      hackerMapMutex = false;
     }
   }
 
@@ -258,7 +265,57 @@ public class BanManager implements Listener, CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
-
+    if(name.equalsIgnoreCase("queryBan") || name.equalsIgnoreCase("qB")) {
+      if(!(sender instanceof Player)) {
+        Warden.get().log("This commands can only be called by a player!");
+      }
+      Player theSender = (Player) sender;
+      if(args.length != 1) {
+        theSender.sendMessage(String.format("[Warden] Incorrect Args!"));
+        return false;
+      }
+      String playerName = args[0];
+      UUID u;
+      try {
+        u = UUIDFetcher.getUUIDOf(playerName);
+      }catch(Exception e1) {
+        theSender.sendMessage("[Warden] Failed to grab UUID of specified name!");
+        e1.printStackTrace();
+        return false;
+      }
+      BanConfig bc = banConfigs.get(u);
+      //TODO: Split into length so it displays in chat, and send message to player
+    }else if(name.equalsIgnoreCase("queryChecks") || name.equalsIgnoreCase("qC")) {
+      if(!(sender instanceof Player)) {
+        Warden.get().log("This commands can only be called by a player!");
+      }
+      Player theSender = (Player) sender;
+      if(args.length != 1) {
+        theSender.sendMessage(String.format("[Warden] Incorrect Args!"));
+        return false;
+      }
+      String playerName = args[0];
+      UUID u;
+      try {
+        u = UUIDFetcher.getUUIDOf(playerName);
+      }catch(Exception e1) {
+        theSender.sendMessage("[Warden] Failed to grab UUID of specified name!");
+        e1.printStackTrace();
+        return false;
+      }
+      BanConfig bc = banConfigs.get(u);
+      //TODO: Split into length so it displays in chat, and send message to player
+    }
     return true;
+  }
+
+  @Override
+  public void onCallback(UUID u, AuthAction.AuthLevel level) {
+
+  }
+
+  @Override
+  public String getAuthBackName() {
+    return "BanManager";
   }
 }

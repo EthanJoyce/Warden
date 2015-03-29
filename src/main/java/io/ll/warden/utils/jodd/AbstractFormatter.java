@@ -1,7 +1,5 @@
 package io.ll.warden.utils.jodd;
 
-import java.io.*;
-
 public abstract class AbstractFormatter implements JdtFormatter
 {
   protected char[][] patterns;

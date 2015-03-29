@@ -49,6 +49,16 @@ public class ConfigManager {
     return origdata;
   }
 
+  public byte[] compress(byte[] data) {
+    List<Byte[]> toComp = splitByteArrayToLength(data, 65536);
+    byte[] newData = new byte[]{};
+    for(Byte[] b : toComp) {
+      ZopfliBuffer zb = zopfli.compress(compression, toUnwrappedByte(b));
+      newData = concat(newData, zb.data);
+    }
+    return newData;
+  }
+
   private List<Byte[]> splitByteArrayToLength(byte[] original, int size) {
     List<Byte[]> retV = new ArrayList<Byte[]>();
     if(original.length <= size) {
