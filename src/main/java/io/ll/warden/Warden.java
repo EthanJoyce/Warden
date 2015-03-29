@@ -13,6 +13,7 @@ import io.ll.warden.accounts.WardenAccountManager;
 import io.ll.warden.check.CheckManager;
 import io.ll.warden.commands.AuthAction;
 import io.ll.warden.commands.WardenPardon;
+import io.ll.warden.configuration.ConfigManager;
 import io.ll.warden.heuristics.BanManager;
 import io.ll.warden.storage.Database;
 import io.ll.warden.storage.MySQL;
@@ -91,6 +92,10 @@ public class Warden extends JavaPlugin {
     }
     log("Done.");
 
+    log("Starting Config for logging....");
+    ConfigManager.get();
+    log("Done.");
+
     log("Setting up BanManager...");
     BanManager.get();
     BanManager.get().setup(this, db);
@@ -105,6 +110,8 @@ public class Warden extends JavaPlugin {
     getCommand("loginWarden").setExecutor(wam);
     getCommand("promoteWarden").setExecutor(wam);
     getCommand("pardonWarden").setExecutor(new WardenPardon());
+    getCommand("queryBan").setExecutor(BanManager.get());
+    getCommand("queryChecks").setExecutor(BanManager.get());
     log("Done.");
 
     log("Setting up CheckManager.");

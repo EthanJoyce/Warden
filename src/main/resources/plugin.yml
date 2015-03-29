@@ -26,3 +26,11 @@ commands:
     description: Unbans someone who was banned by warden.
     usage: /pardW <user>
     aliases: pardW
+  queryBan:
+    description: Get information about banned players.
+    usage: /qB <user>
+    aliases: qB
+  queryChecks:
+    description: Get information about checks thrown on a player.
+    usage: /qC <user>
+    aliases: qC

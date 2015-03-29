@@ -1,6 +1,9 @@
 package io.ll.warden.heuristics;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +30,7 @@ import io.ll.warden.utils.ViolationLevelWithPoints;
  *
  * This also handles things like when people fail checks what level of "Hacker" they are at.
  */
-public class BanManager implements Listener {
+public class BanManager implements Listener, CommandExecutor {
 
   //TODO: Create real mutex type things instead of this crappy boolean system.
 
@@ -251,5 +254,11 @@ public class BanManager implements Listener {
       }
       return null;
     }
+  }
+
+  @Override
+  public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
+
+    return true;
   }
 }

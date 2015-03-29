@@ -8,8 +8,8 @@ package io.ll.warden.utils.zopfli;
  */
 public class ZopfliBuffer {
 
-  byte[] data;
-  int size;
+  public byte[] data;
+  public int size;
   private int bp;
 
   ZopfliBuffer() {
