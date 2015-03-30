@@ -42,7 +42,7 @@ return new MyClass() {
 
 ##### Alignment Rules #####
 
-Google code style is quite vague on alignment so heres the perferred characters:
+Google code style is quite vague on alignment so here's the perferred characters:
 
 ```java
 private int x; // this is fine
@@ -52,7 +52,7 @@ private int   x;      // This is not okay
 private Color color;  // None of this.
 ```
 
-**If you don't follow these guidlines your PR will be denied immediatly.**
+**If you don't follow these guidelines your PR will be denied immediately.**
 
 **Next simply fully comment what your change does, and why it's needed. Then submit your PR again describing everything, and wait for approval!**
 [llink]: http://lordlambda.ninja/another-mc-exploit/
